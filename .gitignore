@@ -1,10 +1,9 @@
 # Python cache
 __pycache__/
-*.pyc
 *.pyo
-*.pkl
 .env
 __pycache__/
+*.pkl
 
 # Virtual environment
 venv/
