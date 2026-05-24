@@ -20,14 +20,29 @@ Experience the intelligent recommendation engine live: **[cinematch-movie-recomm
 - **Stateful Watchlist**: Managed local watchlist allowing users to bookmark and track films statefully across pages with zero server-side latency.
 - **Resilient Caching Systems**: Double-layered memory caching using `@st.cache_resource` for ML assets and `@st.cache_data` (24h TTL) for API payloads.
 
----
-
 ## 🎨 UI Showcase
 
-| 🏠 Home Landing Billboard | 🎯 AI Movie Intelligence Laboratory | 📱 Universal Responsive Reflow |
-| :---: | :---: | :---: |
-| ![Home Preview](preview-home.png) | ![AI Lab Preview](preview-ai-lab.png) | ![Mobile Responsive Preview](preview-mobile.png) |
-| *Immersive featured backdrops and slider rows* | *Active autocomplete search and parameter sliders* | *Optimized touch configurations for mobile browsers* |
+| 🏠 Home Landing Billboard | 🎯 AI Movie Intelligence Laboratory | 💡 Architecture & Responsive Layout |
+|---|---|---|
+| ![Home Preview](assets/previews/home-page.png) | ![AI Matcher Preview](assets/previews/ai-matcher.png) | ![Architecture Preview](assets/previews/architecture-info.png) |
+| Immersive cinematic hero banners, trending movie rails, spotlight trailers, and Netflix-inspired glassmorphism interface. | Advanced AI recommendation laboratory with semantic search, typo correction, mood steering, and intelligent autocomplete systems. | Fully responsive mobile-first interface architecture with adaptive layouts, cinematic spacing, and optimized touch interactions. |
+
+---
+
+## 🚀 Future Improvements
+
+- 🎬 Multi-language recommendation support
+- 🧠 Personalized AI user profiles
+- 📈 Real-time trending analytics dashboard
+- ❤️ Cloud-synced watchlists and favorites
+- 🎤 Voice-based movie discovery assistant
+- 🌙 Dynamic theme customization engine
+- 📱 Progressive Web App (PWA) support
+- 🤖 Transformer-based recommendation models
+- 👥 Social movie sharing and collaborative lists
+- 🎭 Emotion-aware cinematic recommendation pipeline
+- 📊 Advanced similarity visualization graphs
+- 🔔 Smart notification system for new releases
 
 ---
 
