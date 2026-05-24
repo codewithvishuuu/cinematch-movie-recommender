@@ -4,7 +4,7 @@ CineMatch is a production-grade, highly optimized hybrid AI movie recommendation
 
 ## 🚀 Live Demo
 
-Experience the intelligent recommendation engine live: **[cinematch-ai.streamlit.app](https://cinematch-ai.streamlit.app/)**
+Experience the intelligent recommendation engine live: **[cinematch-ai.streamlit.app]([https://cinematch-ai.streamlit.app/](https://cinematch-movie-recommender-bqzsppgvepmahksda8qxg9.streamlit.app/#popular-movies))**
 
 ## ✨ Features
 
