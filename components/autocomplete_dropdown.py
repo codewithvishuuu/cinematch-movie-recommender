@@ -1,6 +1,38 @@
+import html
 import streamlit as st
 from services.tmdb_service import fetch_movie_details
 from ml.recommender import get_recommendations
+
+
+def _esc(value):
+    """Escapes a value for safe HTML interpolation (titles/overviews from TMDB)."""
+    if value is None:
+        return ""
+    return html.escape(str(value), quote=True)
+
+
+def _rating_str(rating):
+    """Displays a rating honestly: real value, or '—' when unavailable."""
+    if rating is None:
+        return "—"
+    try:
+        return str(round(float(rating), 1))
+    except (TypeError, ValueError):
+        return "—"
+
+
+def _valid_poster(movie):
+    """Validates and returns a poster URL (honest fallback only when missing)."""
+    poster_url = movie.get("poster_url", "")
+    if not poster_url or not isinstance(poster_url, str):
+        return "https://images.unsplash.com/photo-1594909122845-11baa439b7bf?q=80&w=500&auto=format&fit=crop"
+    stripped = poster_url.strip().lower()
+    if stripped in ["", "n/a", "null", "none", "null.jpg", "na"]:
+        return "https://images.unsplash.com/photo-1594909122845-11baa439b7bf?q=80&w=500&auto=format&fit=crop"
+    if any(marker in stripped for marker in ("placeholder", "no+poster", "no_poster", "notfound", "not+found")):
+        return "https://images.unsplash.com/photo-1594909122845-11baa439b7bf?q=80&w=500&auto=format&fit=crop"
+    return poster_url
+
 
 def render_autocomplete_dropdown():
     """
@@ -11,33 +43,32 @@ def render_autocomplete_dropdown():
     results = st.session_state.get("autocomplete_results", [])
     if not results:
         return
-        
+
     st.markdown("""
         <div class="section-title-container" style="margin-top: 1rem; margin-bottom: 0.8rem;">
             <h4 style="margin: 0; font-size: 1.1rem; color: #ff4d4d; font-family:'Montserrat',sans-serif; text-transform: uppercase; letter-spacing:1px;">✨ Live Matches Found</h4>
         </div>
     """, unsafe_allow_html=True)
-    
+
     # Outer Glass Panel Container for autocomplete list using st.container(border=True)
     with st.container(border=True):
         for idx, movie in enumerate(results[:5]):
-            title = movie.get("title", "Unknown")
-            poster_url = movie.get("poster_url", "")
-            if not poster_url or not isinstance(poster_url, str) or "placeholder" in poster_url.lower() or "no+poster" in poster_url.lower():
-                poster_url = "https://images.unsplash.com/photo-1594909122845-11baa439b7bf?q=80&w=500&auto=format&fit=crop"
-                
-            rating = movie.get("rating", "7.0")
+            title_raw = movie.get("title", "Unknown")
+            title = _esc(title_raw)
+            poster_url = _valid_poster(movie)
+
+            rating = _rating_str(movie.get("rating"))
             release_date = movie.get("release_date", "N/A")
-            year = release_date.split("-")[0] if "-" in release_date else release_date
-            genres = movie.get("genres", ["Feature"])
-            genres_joined = " • ".join(genres)
-            
+            year = release_date.split("-")[0] if "-" in release_date else (release_date or "N/A")
+            genres = movie.get("genres", []) or []
+            genres_joined = " • ".join(_esc(g) for g in genres)
+
             # Horizontal suggestion card layout
             c_thumb, c_info, c_action = st.columns([1.2, 7.3, 1.5], gap="small")
-            
+
             with c_thumb:
                 st.image(poster_url, use_container_width=True)
-                
+
             with c_info:
                 st.markdown(f"""
                     <div style="display: flex; flex-direction: column; justify-content: center; height: 100%;">
@@ -49,20 +80,20 @@ def render_autocomplete_dropdown():
                         </div>
                     </div>
                 """, unsafe_allow_html=True)
-                
+
             with c_action:
                 # Click action button
-                if st.button("Select", key=f"select_dropdown_{idx}_{title.replace(' ', '_')}", use_container_width=True):
-                    with st.spinner(f"Spotlighting '{title}'..."):
+                if st.button("Select", key=f"select_dropdown_{idx}_{title_raw.replace(' ', '_')}", use_container_width=True):
+                    with st.spinner(f"Spotlighting '{title_raw}'..."):
                         # Get complete details
-                        details = fetch_movie_details(title)
+                        details = fetch_movie_details(title_raw)
                         if details:
                             st.session_state.selected_movie_details = details
-                            st.session_state.searched_movie = title
+                            st.session_state.searched_movie = title_raw
                             st.session_state.hero_movie = details
-                            
+
                             # Trigger recommendations calculations immediately
-                            rec_items = get_recommendations(title, n_recommendations=10)
+                            rec_items = get_recommendations(title_raw, n_recommendations=10)
                             detailed_recs = []
                             for item in rec_items:
                                 det = fetch_movie_details(item["title"])
@@ -71,15 +102,15 @@ def render_autocomplete_dropdown():
                                     det["match_reason"] = item["reason"]
                                     detailed_recs.append(det)
                             st.session_state.recommendations = detailed_recs
-                            
+
                             # Reset query to close autocomplete suggestion deck
                             st.session_state.autocomplete_results = []
                             st.session_state.search_query = ""
-                            st.toast(f"Active spotlight set to '{title}'!", icon="🍿")
+                            st.toast(f"Active spotlight set to '{title_raw}'!", icon="🍿")
                             st.rerun()
-                
+
             st.markdown("<hr style='border-color: rgba(255, 255, 255, 0.05); margin: 8px 0;'>", unsafe_allow_html=True)
-            
+
         # Standard Close button inside the dropdown panel
         c_close_l, c_close_r = st.columns([8.5, 1.5])
         with c_close_r:

@@ -1,9 +1,12 @@
-import streamlit as st
+import logging
 import random
+import streamlit as st
 from services.tmdb_service import get_trending_movies, get_popular_movies, get_top_rated_movies, fetch_movie_details
 from ml.recommender import df
 from components.ui import render_movie_card, render_details_overlay_panel, render_active_trailer_embed
 from components.movie_hero import render_movie_hero
+
+logger = logging.getLogger("cinematch.home")
 
 def get_genre_movies(genre_name, limit=12):
     """Filters local 45k dataset for top movies in a given genre and aggregates details."""
@@ -22,7 +25,7 @@ def get_genre_movies(genre_name, limit=12):
                 movies.append(details)
         return movies
     except Exception as e:
-        print(f"Error filtering local genre '{genre_name}': {e}")
+        logger.debug("Error filtering local genre '%s': %s", genre_name, e)
         return []
 
 def render_home_view():

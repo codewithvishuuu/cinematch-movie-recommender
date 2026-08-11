@@ -1,0 +1,41 @@
+# --- Environment & Secrets (NEVER commit) ---
+.env
+.env.*
+!.env.example
+.streamlit/secrets.toml
+*.secret
+secrets.*
+
+# --- Python ---
+__pycache__/
+*.py[cod]
+*$py.class
+*.egg-info/
+.eggs/
+build/
+dist/
+.venv/
+venv/
+env/
+.env/bin/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+coverage.xml
+htmlcov/
+.tox/
+.mplstyle/
+
+# --- IDEs / OS ---
+.vscode/
+.idea/
+*.swp
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# --- Notebooks / scratch ---
+.ipynb_checkpoints/
+scratch/
+*.log

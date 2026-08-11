@@ -1,6 +1,17 @@
-streamlit>=1.31.0
-pandas
-scikit-learn
-requests
-python-dotenv
-numpy
+# ============================================================================
+# CineMatch - pinned dependencies
+# ============================================================================
+# Verified together on Python 3.11 with the bundled ML artifacts in ml/.
+# The .pkl model files were serialized with numpy>=2 and sklearn 1.8-era
+# pickles, so numpy MUST stay >=2.0 and scipy is required to unpickle the
+# sparse TF-IDF matrix.
+# ============================================================================
+
+streamlit==1.57.0
+pandas==3.0.3
+scikit-learn==1.8.0
+numpy==2.4.5
+scipy==1.17.1
+requests==2.34.0
+urllib3==2.7.0
+python-dotenv==1.2.2

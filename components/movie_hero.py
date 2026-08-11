@@ -1,6 +1,24 @@
+import html
 import streamlit as st
-import textwrap
 from components.ui import format_runtime
+
+
+def _esc(value):
+    """Escapes a value for safe HTML interpolation (titles/overviews from TMDB)."""
+    if value is None:
+        return ""
+    return html.escape(str(value), quote=True)
+
+
+def _rating_str(rating):
+    """Displays a rating honestly: real value, or '—' when unavailable."""
+    if rating is None:
+        return "—"
+    try:
+        return str(round(float(rating), 1))
+    except (TypeError, ValueError):
+        return "—"
+
 
 def render_movie_hero(movie):
     """
@@ -10,28 +28,30 @@ def render_movie_hero(movie):
     """
     if not movie:
         return
-        
-    title = movie.get("title", "Unknown")
-    overview = movie.get("overview", "No description available.")
-    
+
+    title_raw = movie.get("title", "Unknown")
+    title = _esc(title_raw)
+    overview = _esc(movie.get("overview", "No description available."))
+
     # Backdrop validation
     backdrop_url = movie.get("backdrop_url", "")
     if not backdrop_url or not isinstance(backdrop_url, str) or backdrop_url.lower().strip() in ["", "n/a", "null", "none"]:
         backdrop_url = "https://images.unsplash.com/photo-1489599849927-2ee91cede3ba?q=80&w=1280&auto=format&fit=crop"
-        
-    rating = movie.get("rating", "7.5")
-    runtime = format_runtime(movie.get("runtime", 120))
+
+    rating = _rating_str(movie.get("rating"))
+    runtime = format_runtime(movie.get("runtime", ""))
     release_date = movie.get("release_date", "N/A")
-    year = release_date.split("-")[0] if "-" in release_date else release_date
-    
-    genres = movie.get("genres", ["Drama", "Feature"])
-    genre_tags = " • ".join(genres)
-    
+    year = release_date.split("-")[0] if "-" in release_date else (release_date or "N/A")
+
+    genres = movie.get("genres", [])
+    genre_tags = " • ".join(_esc(g) for g in genres)
+
     # Cast list formatting
-    cast = movie.get("cast", [])
+    cast = movie.get("cast", []) or []
     cast_str = ""
     if cast:
-        cast_str = f"<div style='margin-top: 10px; font-size: 0.9rem; color: #ff4d4d; font-weight: 500;'>🎭 Starring: <span style='color: #ffffff;'>{', '.join(cast)}</span></div>"
+        cast_escaped = ", ".join(_esc(c) for c in cast)
+        cast_str = f"<div style='margin-top: 10px; font-size: 0.9rem; color: #ff4d4d; font-weight: 500;'>🎭 Starring: <span style='color: #ffffff;'>{cast_escaped}</span></div>"
 
     # HTML premium spotlight backdrop banner built cleanly without any leading whitespace to completely bypass Markdown code block conversions
     hero_html = (
@@ -50,27 +70,28 @@ def render_movie_hero(movie):
 
     # Interactive Action Deck
     cols = st.columns([2.5, 2.5, 7], gap="small")
-    has_trailer = movie.get("trailer_url") and "youtube" in movie.get("trailer_url").lower()
-    
+    has_trailer = movie.get("trailer_url") and "youtube.com/watch" in movie.get("trailer_url").lower()
+    title_key = title_raw.replace(" ", "_")
+
     with cols[0]:
         if has_trailer:
-            if st.button("▶ Watch Trailer", key=f"hero_play_mod_{title.replace(' ', '_')}", use_container_width=True, type="primary"):
+            if st.button("▶ Watch Trailer", key=f"hero_play_mod_{title_key}", use_container_width=True, type="primary"):
                 st.session_state.active_trailer_movie = movie
                 st.rerun()
         else:
-            st.button("🚫 No Trailer", disabled=True, key=f"hero_no_play_mod_{title.replace(' ', '_')}", use_container_width=True)
-            
+            st.button("🚫 No Trailer", disabled=True, key=f"hero_no_play_mod_{title_key}", use_container_width=True)
+
     with cols[1]:
         watchlist = st.session_state.setdefault("watchlist", [])
-        is_in_wl = any(w["title"].lower() == title.lower() for w in watchlist)
-        
+        is_in_wl = any(w["title"].lower() == title_raw.lower() for w in watchlist)
+
         if is_in_wl:
-            if st.button("❌ Remove List", key=f"hero_wl_rem_mod_{title.replace(' ', '_')}", use_container_width=True, type="secondary"):
-                st.session_state.watchlist = [w for w in watchlist if w["title"].lower() != title.lower()]
-                st.toast(f"Removed '{title}' from watchlist!", icon="🗑️")
+            if st.button("❌ Remove List", key=f"hero_wl_rem_mod_{title_key}", use_container_width=True, type="secondary"):
+                st.session_state.watchlist = [w for w in watchlist if w["title"].lower() != title_raw.lower()]
+                st.toast(f"Removed '{title_raw}' from watchlist!", icon="🗑️")
                 st.rerun()
         else:
-            if st.button("➕ Add Watchlist", key=f"hero_wl_add_mod_{title.replace(' ', '_')}", use_container_width=True, type="secondary"):
+            if st.button("➕ Add Watchlist", key=f"hero_wl_add_mod_{title_key}", use_container_width=True, type="secondary"):
                 st.session_state.watchlist.append(movie)
-                st.toast(f"Added '{title}' to watchlist!", icon="💖")
+                st.toast(f"Added '{title_raw}' to watchlist!", icon="💖")
                 st.rerun()

@@ -1,3 +1,4 @@
+import html
 import streamlit as st
 from ml.recommender import get_all_genres, get_recommendations
 from services.tmdb_service import fetch_movie_details
@@ -59,7 +60,7 @@ def render_recommend_view():
             st.markdown(f"""
                 <div style="background: rgba(46, 204, 113, 0.1); border: 1px solid rgba(46, 204, 113, 0.3); padding: 12px; border-radius: 8px; margin-bottom: 20px;">
                     <div style="color: #2ecc71; font-weight: bold; font-size: 0.9rem;">
-                        🎯 Active Reference: {active_search}
+                        🎯 Active Reference: {html.escape(str(active_search))}
                     </div>
                 </div>
             """, unsafe_allow_html=True)
@@ -163,7 +164,7 @@ def render_recommend_view():
     if st.session_state.get("recommendations"):
         st.markdown(f"""
             <div class="section-title-container">
-                <h2 style="margin: 0; font-size: 1.6rem; font-family:'Montserrat',sans-serif; border-left: 5px solid #2ecc71; padding-left: 12px;">🎯 Vector Recommendations for "{active_search}"</h2>
+                <h2 style="margin: 0; font-size: 1.6rem; font-family:'Montserrat',sans-serif; border-left: 5px solid #2ecc71; padding-left: 12px;">🎯 Vector Recommendations for "{html.escape(str(active_search))}"</h2>
             </div>
         """, unsafe_allow_html=True)
         

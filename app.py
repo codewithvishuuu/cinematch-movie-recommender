@@ -1,10 +1,17 @@
+import logging
 import streamlit as st
-from config.settings import is_api_key_configured
 from components.ui import inject_netflix_theme
+from services.tmdb_client import get_api_status, STATUS_CONNECTED, STATUS_INVALID, STATUS_UNREACHABLE
 from views.home import render_home_view
 from views.recommend import render_recommend_view
 from views.watchlist import render_watchlist_view
 from views.about import render_about_view
+
+# Structured logging (replaces scattered print debugging).
+logging.basicConfig(
+    level=logging.INFO,
+    format="%(asctime)s | %(levelname)-7s | %(name)s | %(message)s",
+)
 
 # 1. Page Configuration (Must be first call)
 st.set_page_config(
@@ -116,15 +123,27 @@ def render_sidebar():
         st.markdown("<hr style='border-color: rgba(229, 9, 20, 0.15); margin: 1rem 0;'>", unsafe_allow_html=True)
         st.caption("🛰️ Server Settings")
         
-        # TMDB status indicators
-        if is_api_key_configured():
+        # TMDB status indicators (network-validated, never "key present = connected")
+        api_status = get_api_status()
+        if api_status == STATUS_CONNECTED:
             st.markdown("""
                 <div style="background: rgba(46, 204, 113, 0.1); border: 1px solid rgba(46, 204, 113, 0.3); padding: 12px; border-radius: 8px;">
                     <div style="color: #2ecc71; font-weight: bold; font-size: 0.85rem; display: flex; align-items: center; gap: 6px;">
                         <span>🟢</span> TMDB API CONNECTED
                     </div>
                     <p style="color: #b3b3b3; font-size: 0.75rem; margin: 4px 0 0 0; line-height: 1.4;">
-                        High-quality 4K backdrops, trailers, and trending metrics unlocked!
+                        Key validated. High-quality backdrops, trailers, and trending metrics unlocked!
+                    </p>
+                </div>
+            """, unsafe_allow_html=True)
+        elif api_status in (STATUS_INVALID, STATUS_UNREACHABLE):
+            st.markdown("""
+                <div style="background: rgba(229, 9, 20, 0.08); border: 1px solid rgba(229, 9, 20, 0.3); padding: 12px; border-radius: 8px;">
+                    <div style="color: #ff4d4d; font-weight: bold; font-size: 0.85rem; display: flex; align-items: center; gap: 6px;">
+                        <span>⚠️</span>TMDB API KEY ISSUE
+                    </div>
+                    <p style="color: #b3b3b3; font-size: 0.75rem; margin: 4px 0 0 0; line-height: 1.4;">
+                        The configured key was rejected or TMDB is unreachable. Showing honest local dataset data until the key works.
                     </p>
                 </div>
             """, unsafe_allow_html=True)
@@ -132,10 +151,10 @@ def render_sidebar():
             st.markdown("""
                 <div style="background: rgba(229, 9, 20, 0.08); border: 1px solid rgba(229, 9, 20, 0.3); padding: 12px; border-radius: 8px;">
                     <div style="color: #ff4d4d; font-weight: bold; font-size: 0.85rem; display: flex; align-items: center; gap: 6px;">
-                        <span>⚠️</span> SANDBOX MODE ACTIVE
+                        <span>⚠️</span> OFFLINE MODE ACTIVE
                     </div>
                     <p style="color: #b3b3b3; font-size: 0.75rem; margin: 4px 0 0 0; line-height: 1.4;">
-                        Running with local mock suites. Add <code>TMDB_API_KEY</code> in <code>.env</code> file to enable complete global 4K trailer streaming!
+                        No valid <code>TMDB_API_KEY</code> detected. Running on real local dataset data. Add your key in <code>.env</code> to unlock live backdrops and trailers.
                     </p>
                 </div>
             """, unsafe_allow_html=True)
