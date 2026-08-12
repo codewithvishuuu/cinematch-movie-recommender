@@ -197,8 +197,9 @@ def _build_local_fallback(title, row=None):
 
     if row is not None:
         overview = str(row.get("overview") or "").strip()
+        from ml.recommender import parse_genres
         genres_raw = str(row.get("genres") or "")
-        genres = [g for g in genres_raw.split() if len(g) > 2]
+        genres = parse_genres(genres_raw)
         try:
             rating = float(row.get("vote_average"))
         except (TypeError, ValueError):

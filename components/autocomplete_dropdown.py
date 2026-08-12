@@ -100,6 +100,8 @@ def render_autocomplete_dropdown():
                                 if det:
                                     det["relevance_score"] = item["relevance_score"]
                                     det["match_reason"] = item["reason"]
+                                    det["match_label"] = item.get("match_label")
+                                    det["match_score"] = item.get("match_score")
                                     detailed_recs.append(det)
                             st.session_state.recommendations = detailed_recs
 

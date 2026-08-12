@@ -1,0 +1,357 @@
+{
+  "module": "ml.recommender",
+  "cold_load_seconds": 1.736,
+  "df_shape": [
+    42141,
+    14
+  ],
+  "df_columns": [
+    "title",
+    "overview",
+    "genres",
+    "tagline",
+    "vote_average",
+    "popularity",
+    "tags",
+    "norm_popularity",
+    "quality",
+    "genres_parsed",
+    "title_clean",
+    "title_strict",
+    "title_roman",
+    "norm_rating"
+  ],
+  "movies": [
+    "The Matrix",
+    "Toy Story",
+    "The Godfather",
+    "Inception",
+    "The Dark Knight",
+    "Interstellar",
+    "Avatar",
+    "The Shawshank Redemption",
+    "Pulp Fiction",
+    "Forrest Gump"
+  ],
+  "movie_count": 10,
+  "total_repeated_titles_across_queries": 5,
+  "repeated_titles": {
+    "d\u00e9sir\u00e9": 2,
+    "guardians of the galaxy": 2,
+    "paradies 505. ein niederbayernkrimi": 2,
+    "the matrix": 2,
+    "on the silver globe": 2
+  },
+  "queries": [
+    {
+      "query": "The Matrix",
+      "matched_title": "The Matrix",
+      "resolved_row_count": 1,
+      "resolved_first_row": 34855,
+      "recs": {
+        "n": 10,
+        "titles": [
+          "Avatar",
+          "Ultraman",
+          "A Detective Story",
+          "D\u00e9sir\u00e9",
+          "Doctor Mordrid",
+          "Ghost in the Shell",
+          "Guardians of the Galaxy",
+          "Snowpiercer",
+          "UFO... annientare S.H.A.D.O. stop. Uccidete Straker...",
+          "Diary of the Dead"
+        ],
+        "duplicate_titles": [],
+        "duplicate_count": 0,
+        "self_included": false,
+        "avg_similarity": 0.164,
+        "avg_genre_jaccard": 0.6167,
+        "pct_shared_genres": 1.0,
+        "diversity_unique_genres": 8,
+        "avg_pairwise_genre_jaccard_pct": 44.89
+      },
+      "elapsed_ms": 88.6,
+      "error": null
+    },
+    {
+      "query": "Toy Story",
+      "matched_title": "Toy Story",
+      "resolved_row_count": 1,
+      "resolved_first_row": 38926,
+      "recs": {
+        "n": 10,
+        "titles": [
+          "Toy Story 2",
+          "Toy Story 3",
+          "Hawaiian Vacation",
+          "Captain Underpants: The First Epic Movie",
+          "Superstar Goofy",
+          "Rio",
+          "Monsters, Inc.",
+          "Banana",
+          "Despicable Me 2",
+          "Dug's Special Mission"
+        ],
+        "duplicate_titles": [],
+        "duplicate_count": 0,
+        "self_included": false,
+        "avg_similarity": 0.1439,
+        "avg_genre_jaccard": 0.9167,
+        "pct_shared_genres": 1.0,
+        "diversity_unique_genres": 5,
+        "avg_pairwise_genre_jaccard_pct": 83.93
+      },
+      "elapsed_ms": 65.6,
+      "error": null
+    },
+    {
+      "query": "The Godfather",
+      "matched_title": "The Godfather",
+      "resolved_row_count": 1,
+      "resolved_first_row": 33010,
+      "recs": {
+        "n": 10,
+        "titles": [
+          "The Godfather: Part II",
+          "The Godfather Trilogy: 1972-1990",
+          "Full Metal Jacket",
+          "The Condemned of Altona",
+          "The Color Purple",
+          "Summer of Sam",
+          "Paradies 505. Ein Niederbayernkrimi",
+          "Elite Squad: The Enemy Within",
+          "The Godfather: Part III",
+          "True Story"
+        ],
+        "duplicate_titles": [],
+        "duplicate_count": 0,
+        "self_included": false,
+        "avg_similarity": 0.1012,
+        "avg_genre_jaccard": 0.5167,
+        "pct_shared_genres": 0.9,
+        "diversity_unique_genres": 8,
+        "avg_pairwise_genre_jaccard_pct": 28.78
+      },
+      "elapsed_ms": 79.1,
+      "error": null
+    },
+    {
+      "query": "Inception",
+      "matched_title": "Inception",
+      "resolved_row_count": 1,
+      "resolved_first_row": 15697,
+      "recs": {
+        "n": 10,
+        "titles": [
+          "Minority Report",
+          "2001: A Space Odyssey",
+          "The Fifth Element",
+          "Renaissance",
+          "Guardians of the Galaxy",
+          "Cypher",
+          "Mission: Impossible - Rogue Nation",
+          "This Island Earth",
+          "Aliens",
+          "Children of Men"
+        ],
+        "duplicate_titles": [],
+        "duplicate_count": 0,
+        "self_included": false,
+        "avg_similarity": 0.1147,
+        "avg_genre_jaccard": 0.5867,
+        "pct_shared_genres": 1.0,
+        "diversity_unique_genres": 9,
+        "avg_pairwise_genre_jaccard_pct": 40.68
+      },
+      "elapsed_ms": 76.6,
+      "error": null
+    },
+    {
+      "query": "The Dark Knight",
+      "matched_title": "The Dark Knight",
+      "resolved_row_count": 1,
+      "resolved_first_row": 31863,
+      "recs": {
+        "n": 10,
+        "titles": [
+          "The Dark Knight Rises",
+          "JFK",
+          "Batman Forever",
+          "Inglourious Basterds",
+          "Law Abiding Citizen",
+          "Batman: Assault on Arkham",
+          "Batman: The Killing Joke",
+          "Batman Begins",
+          "The Payoff",
+          "Q & A"
+        ],
+        "duplicate_titles": [],
+        "duplicate_count": 0,
+        "self_included": false,
+        "avg_similarity": 0.1321,
+        "avg_genre_jaccard": 0.645,
+        "pct_shared_genres": 1.0,
+        "diversity_unique_genres": 9,
+        "avg_pairwise_genre_jaccard_pct": 43.0
+      },
+      "elapsed_ms": 70.6,
+      "error": null
+    },
+    {
+      "query": "Interstellar",
+      "matched_title": "Interstellar",
+      "resolved_row_count": 1,
+      "resolved_first_row": 15856,
+      "recs": {
+        "n": 10,
+        "titles": [
+          "Midnight Special",
+          "Gattaca",
+          "The Matrix",
+          "On the Silver Globe",
+          "Eraserhead",
+          "Prometheus",
+          "Voices of a Distant Star",
+          "About Time",
+          "Starship Troopers",
+          "D\u00e9sir\u00e9"
+        ],
+        "duplicate_titles": [],
+        "duplicate_count": 0,
+        "self_included": false,
+        "avg_similarity": 0.1184,
+        "avg_genre_jaccard": 0.455,
+        "pct_shared_genres": 1.0,
+        "diversity_unique_genres": 11,
+        "avg_pairwise_genre_jaccard_pct": 30.78
+      },
+      "elapsed_ms": 67.0,
+      "error": null
+    },
+    {
+      "query": "Avatar",
+      "matched_title": "Avatar",
+      "resolved_row_count": 1,
+      "resolved_first_row": 3366,
+      "recs": {
+        "n": 10,
+        "titles": [
+          "Avatar 2",
+          "The Matrix",
+          "The Inhabited Island",
+          "Guardians of the Galaxy Vol. 2",
+          "Operation Mekong",
+          "Tales from Earthsea",
+          "Okja",
+          "On the Silver Globe",
+          "Predator",
+          "Rogue One: A Star Wars Story"
+        ],
+        "duplicate_titles": [],
+        "duplicate_count": 0,
+        "self_included": false,
+        "avg_similarity": 0.1592,
+        "avg_genre_jaccard": 0.65,
+        "pct_shared_genres": 1.0,
+        "diversity_unique_genres": 8,
+        "avg_pairwise_genre_jaccard_pct": 47.11
+      },
+      "elapsed_ms": 72.8,
+      "error": null
+    },
+    {
+      "query": "The Shawshank Redemption",
+      "matched_title": "The Shawshank Redemption",
+      "resolved_row_count": 1,
+      "resolved_first_row": 36507,
+      "recs": {
+        "n": 10,
+        "titles": [
+          "Brubaker",
+          "The Diving Bell and the Butterfly",
+          "Le Trou",
+          "Monsieur Verdoux",
+          "Die zw\u00f6lf Geschworenen",
+          "Rififi",
+          "J. Edgar",
+          "Bubble",
+          "You Only Live Once",
+          "A Cab for Three"
+        ],
+        "duplicate_titles": [],
+        "duplicate_count": 0,
+        "self_included": false,
+        "avg_similarity": 0.078,
+        "avg_genre_jaccard": 0.7167,
+        "pct_shared_genres": 1.0,
+        "diversity_unique_genres": 9,
+        "avg_pairwise_genre_jaccard_pct": 53.7
+      },
+      "elapsed_ms": 67.8,
+      "error": null
+    },
+    {
+      "query": "Pulp Fiction",
+      "matched_title": "Pulp Fiction",
+      "resolved_row_count": 1,
+      "resolved_first_row": 24859,
+      "recs": {
+        "n": 10,
+        "titles": [
+          "Snatch",
+          "Get Out",
+          "Branded to Kill",
+          "The American Friend",
+          "Killing Is My Business, Honey",
+          "Kill Me Three Times",
+          "The Last House on the Left",
+          "Kill Your Friends",
+          "Paradies 505. Ein Niederbayernkrimi",
+          "A Colt Is My Passport"
+        ],
+        "duplicate_titles": [],
+        "duplicate_count": 0,
+        "self_included": false,
+        "avg_similarity": 0.1034,
+        "avg_genre_jaccard": 0.4667,
+        "pct_shared_genres": 1.0,
+        "diversity_unique_genres": 8,
+        "avg_pairwise_genre_jaccard_pct": 28.85
+      },
+      "elapsed_ms": 65.5,
+      "error": null
+    },
+    {
+      "query": "Forrest Gump",
+      "matched_title": "Forrest Gump",
+      "resolved_row_count": 1,
+      "resolved_first_row": 11864,
+      "recs": {
+        "n": 10,
+        "titles": [
+          "City Lights",
+          "Chiedimi se sono felice",
+          "Dangerous Liaisons",
+          "Love, Rosie",
+          "Anomalisa",
+          "A Pig's Tale",
+          "The Ballad of the Sad Cafe",
+          "Da geht noch was!",
+          "Tiptoes",
+          "Paterson"
+        ],
+        "duplicate_titles": [],
+        "duplicate_count": 0,
+        "self_included": false,
+        "avg_similarity": 0.1026,
+        "avg_genre_jaccard": 0.825,
+        "pct_shared_genres": 1.0,
+        "diversity_unique_genres": 6,
+        "avg_pairwise_genre_jaccard_pct": 67.33
+      },
+      "elapsed_ms": 65.8,
+      "error": null
+    }
+  ]
+}

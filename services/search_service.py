@@ -80,7 +80,7 @@ def _search_movies_pipeline_cached(query, limit, status_token):
     results = []
     seen_titles = set()
 
-    # Step 1: Search local 45,447 dataset first to ensure maximum recommender compatibility
+    # Step 1: Search local 42,141-title dataset first to ensure maximum recommender compatibility
     try:
         from ml.recommender import df
         import pandas as pd
@@ -135,13 +135,14 @@ def _search_movies_pipeline_cached(query, limit, status_token):
                     t_lower = t.lower().strip()
                     if t_lower not in seen_titles:
                         seen_titles.add(t_lower)
+                        from ml.recommender import parse_genres
                         genres_str = str(row.get("genres", "") or "")
                         results.append({
                             "title": t,
                             "source": "local",
                             "popularity": float(row.get("popularity", 0.0) or 0.0),
                             "vote_average": float(row.get("vote_average", 0.0) or 0.0),
-                            "genres": [g.capitalize() for g in genres_str.split() if len(g) > 2][:3],
+                            "genres": parse_genres(genres_str)[:3],
                             "match_score": int(row["score"]),
                         })
     except Exception as exc:

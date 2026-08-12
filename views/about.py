@@ -22,7 +22,7 @@ def render_about_view():
                     <div>
                         <h4 style="margin: 0 0 5px 0; color: #ffffff; font-size:1.15rem;">Text Metadata Tokenization</h4>
                         <p style="margin: 0; color: #b3b3b3; font-size: 0.92rem; line-height: 1.6;">
-                            We synthesize raw descriptors (story plot summaries, genres, tagline keywords) into high-fidelity "tags" for <b>45,447 movies</b>. 
+                            We synthesize raw descriptors (story plot summaries, genres, tagline keywords) into high-fidelity "tags" for <b>42,141 movies</b>.
                             The system processes these features using character and word-level tokenizers.
                         </p>
                     </div>
@@ -136,7 +136,7 @@ def render_about_view():
                 <div style="text-align: left; color: #b3b3b3; font-size: 0.9rem; line-height: 2;">
                     <b>Frontend:</b> Streamlit (Python)<br>
                     <b>Theme:</b> Netflix Cinematic CSS<br>
-                    <b>Database Size:</b> 45,447 titles<br>
+                    <b>Database Size:</b> 42,141 titles<br>
                     <b>Core Libraries:</b> Pandas, Scikit-learn, Requests<br>
                     <b>API Source:</b> Live TMDB API Integration<br>
                 </div>

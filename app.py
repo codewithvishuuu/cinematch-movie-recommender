@@ -106,7 +106,7 @@ def render_sidebar():
         st.markdown(f"""
             <div style="display: flex; gap: 8px; justify-content: space-between; margin-bottom: 0.5rem;">
                 <div class="sidebar-stat-card" style="flex: 1; padding: 6px 4px;">
-                    <div class="sidebar-stat-val" style="font-size: 0.95rem;">45.4K</div>
+                    <div class="sidebar-stat-val" style="font-size: 0.95rem;">42.1K</div>
                     <div class="sidebar-stat-label" style="font-size: 0.55rem; letter-spacing: 0.5px;">Titles</div>
                 </div>
                 <div class="sidebar-stat-card" style="flex: 1; padding: 6px 4px;">

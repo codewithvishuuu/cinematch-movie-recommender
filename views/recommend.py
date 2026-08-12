@@ -132,6 +132,8 @@ def render_recommend_view():
                             if details:
                                 details["relevance_score"] = item["relevance_score"]
                                 details["match_reason"] = item["reason"]
+                                details["match_label"] = item.get("match_label")
+                                details["match_score"] = item.get("match_score")
                                 detailed_recs.append(details)
                         st.session_state.recommendations = detailed_recs
                         st.toast(f"AI Lab computed {len(detailed_recs)} similarity vector suggestions!", icon="🧬")
@@ -142,13 +144,13 @@ def render_recommend_view():
             <div style="background: rgba(255, 255, 255, 0.01); border: 1px solid rgba(255, 255, 255, 0.05); padding: 25px; border-radius: 12px; height: 100%;">
                 <h3 style="margin-top: 0; margin-bottom: 15px; color: #ff4d4d; font-family:'Montserrat',sans-serif;">🔬 AI Pipeline Architecture</h3>
                 <p style="color: #b3b3b3; line-height: 1.7; font-size: 0.95rem;">
-                    The Laboratory maps storylines using high-dimensional cosine angle spaces on 45,447 records. Precomputed TF-IDF token matrices allow instant evaluation.
+                    The Laboratory maps storylines using high-dimensional cosine angle spaces on 42,141 canonical records. Precomputed TF-IDF sparse token matrices allow instant evaluation.
                 </p>
                 <h4 style="color:#ffffff; margin-bottom:10px;">🧬 How to operate:</h4>
                 <ul style="color:#b3b3b3; line-height: 1.7; font-size:0.92rem; padding-left:20px;">
                     <li><b>Search Step:</b> Use the top autocomplete search input to query films.</li>
-                    <li><b>Parameter Refinement:</b> Select specific genre exclusions or psychological mood overrides to alter storyline ratings.</li>
-                    <li><b>Mathematical Reranking:</b> We combine storyline semantic indexing (70% weight) with live TMDB review scores and popularity metrics (30% weight) to yield high suggestions accuracy.</li>
+                    <li><b>Parameter Refinement:</b> Select specific genre exclusions or psychological mood overrides to alter rankings.</li>
+                    <li><b>Hybrid Reranking:</b> We combine storyline content similarity, canonical genre overlap, a mean-centered quality rating signal and a small popularity signal to rank story-similar candidates. TMDB is only used to enrich posters, trailers and details — never for recommendation scoring.</li>
                 </ul>
             </div>
         """, unsafe_allow_html=True)
@@ -183,7 +185,8 @@ def render_recommend_view():
                             item, 
                             key_prefix=f"rec_lab_{idx}", 
                             relevance_score=item.get("relevance_score"),
-                            match_reason=item.get("match_reason")
+                            match_reason=item.get("match_reason"),
+                            match_label=item.get("match_label")
                         )
             st.markdown("<br>", unsafe_allow_html=True)
             

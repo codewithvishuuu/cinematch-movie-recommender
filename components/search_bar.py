@@ -13,7 +13,7 @@ def render_search_bar():
                 <h3 style="margin: 0; font-family:'Montserrat',sans-serif; color:#ffffff; font-weight:800; font-size: 1.4rem;">Discover Cinematic Masterpieces</h3>
             </div>
             <p style="color:#b3b3b3; font-size:0.9rem; margin:0 0 15px 0; line-height: 1.5;">
-                Type any movie title. Our smart typo-correcting pipeline queries both our local 45,447 AI database and TMDB live to compile instant recommendations.
+                Type any movie title. Our smart typo-correcting pipeline queries both our local 42,141-title AI database and TMDB live to compile instant recommendations.
             </p>
         </div>
     """, unsafe_allow_html=True)
@@ -84,6 +84,8 @@ def render_search_bar():
                                 if det:
                                     det["relevance_score"] = item["relevance_score"]
                                     det["match_reason"] = item["reason"]
+                                    det["match_label"] = item.get("match_label")
+                                    det["match_score"] = item.get("match_score")
                                     detailed_recs.append(det)
                             st.session_state.recommendations = detailed_recs
                             st.session_state.autocomplete_results = []

@@ -142,10 +142,10 @@ def _valid_poster(movie):
     return poster_url
 
 
-def render_movie_card(movie, key_prefix="card", relevance_score=None, match_reason=None):
+def render_movie_card(movie, key_prefix="card", relevance_score=None, match_reason=None, match_label=None):
     """
     Renders a premium Netflix movie poster card.
-    Displays Match %, ratings, genres, and overlays details / trailer triggers.
+    Displays the calibrated match label, ratings, genres, and overlays details / trailer triggers.
     """
     if not movie:
         return
@@ -159,13 +159,15 @@ def render_movie_card(movie, key_prefix="card", relevance_score=None, match_reas
     year = release_date.split("-")[0] if "-" in release_date else (release_date or "N/A")
     overview = _esc(movie.get("overview", "No synopsis available."))
 
-    # Calculate a beautiful realistic Letterboxd Match Percentage
-    if relevance_score is not None:
-        match_percentage = int(62 + 35 * float(relevance_score))
-        match_percentage = min(98, max(55, match_percentage))
-        match_badge_html = f'<span class="match-badge">{match_percentage}% MATCH</span>'
+    # Calibrated match label (percentile of the candidate pool per query).
+    # Legacy percentage math (62 + 35*sim) was removed: raw cosine similarity
+    # is never presented as a probability.
+    if match_label:
+        match_badge_html = f'<span class="match-badge">{_esc(str(match_label).upper())}</span>'
+    elif relevance_score is not None:
+        match_badge_html = '<span class="match-badge">MATCHED</span>'
     else:
-        # Default fallback match percentage for popular items
+        # Default fallback badge for popular items without a recommendation score
         match_badge_html = '<span class="match-badge">POPULAR</span>'
 
     # Hidden marker for hover scaling selector

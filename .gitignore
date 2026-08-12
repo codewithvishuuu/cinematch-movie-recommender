@@ -39,3 +39,5 @@ desktop.ini
 .ipynb_checkpoints/
 scratch/
 *.log
+# Staging artifacts (reproducible intermediate, not committed)
+ml_next/

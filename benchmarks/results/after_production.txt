@@ -1,0 +1,134 @@
+Module: ml.recommender  |  cold load: 1.736s
+df shape: [42141, 14]  cols: ['title', 'overview', 'genres', 'tagline', 'vote_average', 'popularity', 'tags', 'norm_popularity', 'quality', 'genres_parsed', 'title_clean', 'title_strict', 'title_roman', 'norm_rating']
+Repeated titles across queries: 5
+
+== The Matrix -> matched: 'The Matrix' (rows=1, first_row=34855) | 88.6ms
+   self_included=False dupes=[] avg_sim=0.164 genre_jaccard=0.6167 pct_shared_genres=1.0 unique_genres=8 pairwise_jaccard=44.89%
+    1. Avatar
+    2. Ultraman
+    3. A Detective Story
+    4. Désiré
+    5. Doctor Mordrid
+    6. Ghost in the Shell
+    7. Guardians of the Galaxy
+    8. Snowpiercer
+    9. UFO... annientare S.H.A.D.O. stop. Uccidete Straker...
+   10. Diary of the Dead
+
+== Toy Story -> matched: 'Toy Story' (rows=1, first_row=38926) | 65.6ms
+   self_included=False dupes=[] avg_sim=0.1439 genre_jaccard=0.9167 pct_shared_genres=1.0 unique_genres=5 pairwise_jaccard=83.93%
+    1. Toy Story 2
+    2. Toy Story 3
+    3. Hawaiian Vacation
+    4. Captain Underpants: The First Epic Movie
+    5. Superstar Goofy
+    6. Rio
+    7. Monsters, Inc.
+    8. Banana
+    9. Despicable Me 2
+   10. Dug's Special Mission
+
+== The Godfather -> matched: 'The Godfather' (rows=1, first_row=33010) | 79.1ms
+   self_included=False dupes=[] avg_sim=0.1012 genre_jaccard=0.5167 pct_shared_genres=0.9 unique_genres=8 pairwise_jaccard=28.78%
+    1. The Godfather: Part II
+    2. The Godfather Trilogy: 1972-1990
+    3. Full Metal Jacket
+    4. The Condemned of Altona
+    5. The Color Purple
+    6. Summer of Sam
+    7. Paradies 505. Ein Niederbayernkrimi
+    8. Elite Squad: The Enemy Within
+    9. The Godfather: Part III
+   10. True Story
+
+== Inception -> matched: 'Inception' (rows=1, first_row=15697) | 76.6ms
+   self_included=False dupes=[] avg_sim=0.1147 genre_jaccard=0.5867 pct_shared_genres=1.0 unique_genres=9 pairwise_jaccard=40.68%
+    1. Minority Report
+    2. 2001: A Space Odyssey
+    3. The Fifth Element
+    4. Renaissance
+    5. Guardians of the Galaxy
+    6. Cypher
+    7. Mission: Impossible - Rogue Nation
+    8. This Island Earth
+    9. Aliens
+   10. Children of Men
+
+== The Dark Knight -> matched: 'The Dark Knight' (rows=1, first_row=31863) | 70.6ms
+   self_included=False dupes=[] avg_sim=0.1321 genre_jaccard=0.645 pct_shared_genres=1.0 unique_genres=9 pairwise_jaccard=43.0%
+    1. The Dark Knight Rises
+    2. JFK
+    3. Batman Forever
+    4. Inglourious Basterds
+    5. Law Abiding Citizen
+    6. Batman: Assault on Arkham
+    7. Batman: The Killing Joke
+    8. Batman Begins
+    9. The Payoff
+   10. Q & A
+
+== Interstellar -> matched: 'Interstellar' (rows=1, first_row=15856) | 67.0ms
+   self_included=False dupes=[] avg_sim=0.1184 genre_jaccard=0.455 pct_shared_genres=1.0 unique_genres=11 pairwise_jaccard=30.78%
+    1. Midnight Special
+    2. Gattaca
+    3. The Matrix
+    4. On the Silver Globe
+    5. Eraserhead
+    6. Prometheus
+    7. Voices of a Distant Star
+    8. About Time
+    9. Starship Troopers
+   10. Désiré
+
+== Avatar -> matched: 'Avatar' (rows=1, first_row=3366) | 72.8ms
+   self_included=False dupes=[] avg_sim=0.1592 genre_jaccard=0.65 pct_shared_genres=1.0 unique_genres=8 pairwise_jaccard=47.11%
+    1. Avatar 2
+    2. The Matrix
+    3. The Inhabited Island
+    4. Guardians of the Galaxy Vol. 2
+    5. Operation Mekong
+    6. Tales from Earthsea
+    7. Okja
+    8. On the Silver Globe
+    9. Predator
+   10. Rogue One: A Star Wars Story
+
+== The Shawshank Redemption -> matched: 'The Shawshank Redemption' (rows=1, first_row=36507) | 67.8ms
+   self_included=False dupes=[] avg_sim=0.078 genre_jaccard=0.7167 pct_shared_genres=1.0 unique_genres=9 pairwise_jaccard=53.7%
+    1. Brubaker
+    2. The Diving Bell and the Butterfly
+    3. Le Trou
+    4. Monsieur Verdoux
+    5. Die zwölf Geschworenen
+    6. Rififi
+    7. J. Edgar
+    8. Bubble
+    9. You Only Live Once
+   10. A Cab for Three
+
+== Pulp Fiction -> matched: 'Pulp Fiction' (rows=1, first_row=24859) | 65.5ms
+   self_included=False dupes=[] avg_sim=0.1034 genre_jaccard=0.4667 pct_shared_genres=1.0 unique_genres=8 pairwise_jaccard=28.85%
+    1. Snatch
+    2. Get Out
+    3. Branded to Kill
+    4. The American Friend
+    5. Killing Is My Business, Honey
+    6. Kill Me Three Times
+    7. The Last House on the Left
+    8. Kill Your Friends
+    9. Paradies 505. Ein Niederbayernkrimi
+   10. A Colt Is My Passport
+
+== Forrest Gump -> matched: 'Forrest Gump' (rows=1, first_row=11864) | 65.8ms
+   self_included=False dupes=[] avg_sim=0.1026 genre_jaccard=0.825 pct_shared_genres=1.0 unique_genres=6 pairwise_jaccard=67.33%
+    1. City Lights
+    2. Chiedimi se sono felice
+    3. Dangerous Liaisons
+    4. Love, Rosie
+    5. Anomalisa
+    6. A Pig's Tale
+    7. The Ballad of the Sad Cafe
+    8. Da geht noch was!
+    9. Tiptoes
+   10. Paterson
+

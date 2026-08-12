@@ -1,0 +1,134 @@
+Module: benchmarks.frozen.recommender_phase12  |  cold load: 2.103s
+df shape: [45447, 12]  cols: ['title', 'overview', 'genres', 'tagline', 'vote_average', 'popularity', 'tags', 'norm_popularity', 'title_clean', 'title_strict', 'title_roman', 'norm_rating']
+Repeated titles across queries: 6
+
+== The Matrix -> matched: 'The Matrix' (rows=1, first_row=2457) | 128.5ms
+   self_included=False dupes=[] avg_sim=0.1894 genre_jaccard=0.1783 pct_shared_genres=0.5 unique_genres=10 pairwise_jaccard=15.8%
+    1. Avatar
+    2. A Detective Story
+    3. 23
+    4. Underground: The Julian Assange Story
+    5. Algorithm
+    6. The Zero Theorem
+    7. Hackers
+    8. A Kiss at Midnight
+    9. Who Am I
+   10. Désiré
+
+== Toy Story -> matched: 'Toy Story' (rows=1, first_row=0) | 107.0ms
+   self_included=False dupes=[] avg_sim=0.2016 genre_jaccard=0.495 pct_shared_genres=0.9 unique_genres=6 pairwise_jaccard=28.37%
+    1. Toy Story 2
+    2. Toy Story 3
+    3. Small Fry
+    4. Rebel Without a Cause
+    5. What's Up, Tiger Lily?
+    6. Manhattan
+    7. Group Sex
+    8. For Your Consideration
+    9. Superstar Goofy
+   10. Приключения Домовёнка
+
+== The Godfather -> matched: 'The Godfather' (rows=1, first_row=834) | 94.1ms
+   self_included=False dupes=[] avg_sim=0.2329 genre_jaccard=0.6167 pct_shared_genres=0.8 unique_genres=6 pairwise_jaccard=38.3%
+    1. The Godfather: Part II
+    2. The Godfather Trilogy: 1972-1990
+    3. Paradies 505. Ein Niederbayernkrimi
+    4. Blood Ties
+    5. Petos
+    6. A Cab for Three
+    7. Honor Thy Father
+    8. Judge Fayard Called the Sheriff
+    9. Election
+   10. Aprel
+
+== Inception -> matched: 'Inception' (rows=1, first_row=15476) | 75.5ms
+   self_included=False dupes=[] avg_sim=0.1363 genre_jaccard=0.4967 pct_shared_genres=0.9 unique_genres=9 pairwise_jaccard=35.26%
+    1. Minority Report
+    2. Cypher
+    3. The Farmer's Wife
+    4. 2001: A Space Odyssey
+    5. Désiré
+    6. The Fifth Element
+    7. I Am So Proud of You
+    8. Gattaca
+    9. Mechenosets
+   10. Terminator 2: Judgment Day
+
+== The Dark Knight -> matched: 'The Dark Knight' (rows=2, first_row=12478) | 82.9ms
+   self_included=False dupes=[] avg_sim=0.1996 genre_jaccard=0.35 pct_shared_genres=0.8 unique_genres=7 pairwise_jaccard=22.41%
+    1. The Dark Knight Rises
+    2. Batman Unmasked: The Psychology of the Dark Knight
+    3. Batman Returns
+    4. Batman Forever
+    5. Batman: The Dark Knight Returns, Part 2
+    6. İtirazım Var
+    7. Batman: Under the Red Hood
+    8. Paradies 505. Ein Niederbayernkrimi
+    9. Pitbull
+   10. Batman Begins
+
+== Interstellar -> matched: 'Interstellar' (rows=1, first_row=22869) | 87.0ms
+   self_included=False dupes=[] avg_sim=0.1677 genre_jaccard=0.3583 pct_shared_genres=0.9 unique_genres=12 pairwise_jaccard=17.84%
+    1. Gattaca
+    2. Voices of a Distant Star
+    3. On the Silver Globe
+    4. Zero
+    5. Stargate
+    6. Cosmos
+    7. Frank Herbert's Children of Dune
+    8. Désiré
+    9. Suburban Commando
+   10. Concerning Violence
+
+== Avatar -> matched: 'Avatar' (rows=1, first_row=14547) | 73.6ms
+   self_included=False dupes=[] avg_sim=0.1621 genre_jaccard=0.5117 pct_shared_genres=0.9 unique_genres=9 pairwise_jaccard=29.6%
+    1. The Matrix
+    2. A Trip to the Moon
+    3. On the Silver Globe
+    4. Désiré
+    5. Stand by Me Doraemon
+    6. Frank Herbert's Dune
+    7. The Inhabited Island
+    8. Doctor Strange
+    9. Die Mondverschwörung
+   10. Lara Croft Tomb Raider: The Cradle of Life
+
+== The Shawshank Redemption -> matched: 'The Shawshank Redemption' (rows=1, first_row=314) | 78.5ms
+   self_included=False dupes=[] avg_sim=0.138 genre_jaccard=0.6 pct_shared_genres=0.9 unique_genres=8 pairwise_jaccard=39.07%
+    1. Female Prisoner Scorpion: Jailhouse 41
+    2. Devils on the Doorstep
+    3. The Domino Principle
+    4. Breath
+    5. Talvar
+    6. Brubaker
+    7. The Peach Thief
+    8. A Cab for Three
+    9. The Farm: Angola, USA
+   10. Le Trou
+
+== Pulp Fiction -> matched: 'Pulp Fiction' (rows=1, first_row=292) | 81.3ms
+   self_included=False dupes=[] avg_sim=0.1454 genre_jaccard=0.3567 pct_shared_genres=0.7 unique_genres=8 pairwise_jaccard=19.41%
+    1. Paradies 505. Ein Niederbayernkrimi
+    2. From Mexico With Love
+    3. Petos
+    4. Pistol Opera
+    5. Safety Catch
+    6. 11:14
+    7. Eddie Izzard: Circle
+    8. Love Torn in a Dream
+    9. The Confession
+   10. A Colt Is My Passport
+
+== Forrest Gump -> matched: 'Forrest Gump' (rows=1, first_row=351) | 73.4ms
+   self_included=False dupes=[] avg_sim=0.1112 genre_jaccard=0.4567 pct_shared_genres=0.8 unique_genres=8 pairwise_jaccard=26.96%
+    1. Feast
+    2. Blind
+    3. Frozen
+    4. The Woman Who Drinks
+    5. Lost in Munich
+    6. The General
+    7. Final Cut: Ladies and Gentlemen
+    8. Da geht noch was!
+    9. Chiedimi se sono felice
+   10. Johanna d'Arc of Mongolia
+
