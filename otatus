@@ -1,0 +1,87 @@
+benchmarks/frozen/recommender_phase12.py:35: trailing whitespace.
+[32m+[m[41m            [m
+benchmarks/frozen/recommender_phase12.py:40: trailing whitespace.
+[32m+[m[41m        [m
+benchmarks/frozen/recommender_phase12.py:45: trailing whitespace.
+[32m+[m[41m        [m
+benchmarks/frozen/recommender_phase12.py:51: trailing whitespace.
+[32m+[m[41m        [m
+benchmarks/frozen/recommender_phase12.py:64: trailing whitespace.
+[32m+[m[41m        [m
+benchmarks/frozen/recommender_phase12.py:68: trailing whitespace.
+[32m+[m[41m        [m
+benchmarks/frozen/recommender_phase12.py:87: trailing whitespace.
+[32m+[m[41m    [m
+benchmarks/frozen/recommender_phase12.py:93: trailing whitespace.
+[32m+[m[41m            [m
+benchmarks/frozen/recommender_phase12.py:108: trailing whitespace.
+[32m+[m[41m        [m
+benchmarks/frozen/recommender_phase12.py:111: trailing whitespace.
+[32m+[m[41m    [m
+benchmarks/frozen/recommender_phase12.py:116: trailing whitespace.
+[32m+[m[41m            [m
+benchmarks/frozen/recommender_phase12.py:121: trailing whitespace.
+[32m+[m[41m    [m
+benchmarks/frozen/recommender_phase12.py:128: trailing whitespace.
+[32m+[m[41m            [m
+benchmarks/frozen/recommender_phase12.py:141: trailing whitespace.
+[32m+[m[41m                    [m
+benchmarks/frozen/recommender_phase12.py:147: trailing whitespace.
+[32m+[m[41m        [m
+benchmarks/frozen/recommender_phase12.py:152: trailing whitespace.
+[32m+[m[41m        [m
+benchmarks/frozen/recommender_phase12.py:161: trailing whitespace.
+[32m+[m[41m    [m
+benchmarks/frozen/recommender_phase12.py:164: trailing whitespace.
+[32m+[m[41m    [m
+benchmarks/frozen/recommender_phase12.py:178: trailing whitespace.
+[32m+[m[41m        [m
+benchmarks/frozen/recommender_phase12.py:184: trailing whitespace.
+[32m+[m[41m        [m
+benchmarks/frozen/recommender_phase12.py:187: trailing whitespace.
+[32m+[m[41m        [m
+benchmarks/frozen/recommender_phase12.py:198: trailing whitespace.
+[32m+[m[41m        [m
+benchmarks/frozen/recommender_phase12.py:203: trailing whitespace.
+[32m+[m[41m        [m
+benchmarks/frozen/recommender_phase12.py:207: trailing whitespace.
+[32m+[m[41m        [m
+benchmarks/frozen/recommender_phase12.py:211: trailing whitespace.
+[32m+[m[41m            [m
+benchmarks/frozen/recommender_phase12.py:214: trailing whitespace.
+[32m+[m[41m        [m
+benchmarks/frozen/recommender_phase12.py:224: trailing whitespace.
+[32m+[m[41m        [m
+benchmarks/frozen/recommender_phase12.py:227: trailing whitespace.
+[32m+[m[41m        [m
+benchmarks/frozen/recommender_phase12.py:230: trailing whitespace.
+[32m+[m[41m        [m
+benchmarks/frozen/recommender_phase12.py:238: trailing whitespace.
+[32m+[m[41m        [m
+benchmarks/frozen/recommender_phase12.py:242: trailing whitespace.
+[32m+[m[41m            [m
+benchmarks/frozen/recommender_phase12.py:247: trailing whitespace.
+[32m+[m[41m                [m
+benchmarks/frozen/recommender_phase12.py:250: trailing whitespace.
+[32m+[m[41m            [m
+benchmarks/frozen/recommender_phase12.py:255: trailing whitespace.
+[32m+[m[41m                [m
+benchmarks/frozen/recommender_phase12.py:259: trailing whitespace.
+[32m+[m[41m                [m
+benchmarks/frozen/recommender_phase12.py:261: trailing whitespace.
+[32m+[m[41m            [m
+benchmarks/frozen/recommender_phase12.py:264: trailing whitespace.
+[32m+[m[41m        [m
+benchmarks/frozen/recommender_phase12.py:270: trailing whitespace.
+[32m+[m[41m        [m
+benchmarks/frozen/recommender_phase12.py:274: trailing whitespace.
+[32m+[m[41m            [m
+benchmarks/frozen/recommender_phase12.py:281: trailing whitespace.
+[32m+[m[41m            [m
+benchmarks/frozen/recommender_phase12.py:287: trailing whitespace.
+[32m+[m[41m            [m
+benchmarks/frozen/recommender_phase12.py:289: trailing whitespace.
+[32m+[m[41m        [m
+benchmarks/results/after.txt:134: new blank line at EOF.
+benchmarks/results/after_production.txt:134: new blank line at EOF.
+benchmarks/results/before.txt:134: new blank line at EOF.

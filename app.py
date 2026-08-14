@@ -37,6 +37,10 @@ def init_session_states():
         st.session_state.active_trailer_movie = None
     if "selected_mood_label" not in st.session_state:
         st.session_state.selected_mood_label = "None"
+    # Custom sidebar toggle state ("expanded" | "collapsed") — drives the
+    # premium open/close experience without Streamlit's native collapse icon.
+    if "cm_sidebar_state" not in st.session_state:
+        st.session_state.cm_sidebar_state = "expanded"
 
 init_session_states()
 
@@ -44,43 +48,79 @@ init_session_states()
 inject_netflix_theme()
 
 # 4. Premium Sidebar Navigation
+SIDEBAR_LOGO_HTML = """
+    <div class="cm-logo">
+        <svg width="42" height="42" viewBox="0 0 100 100" aria-hidden="true">
+            <circle cx="50" cy="50" r="42" fill="none" stroke="#e50914" stroke-width="2.5" opacity="0.9" />
+            <circle cx="50" cy="50" r="34" fill="none" stroke="rgba(255,255,255,0.15)" stroke-width="1.5" stroke-dasharray="10 5" />
+            <polygon points="44,36 66,50 44,64" fill="#ffffff" style="filter: drop-shadow(0 2px 4px rgba(0,0,0,0.4));" />
+        </svg>
+        <div>
+            <div class="cm-logo-name">CineMatch</div>
+            <div class="cm-logo-sub">AI Discovery Engine</div>
+        </div>
+    </div>
+"""
+
+
+def render_sidebar_expand_control():
+    """Floating expand affordance shown only while the sidebar is collapsed.
+
+    When collapsed, the sidebar section is hidden via CSS so the main canvas
+    regains the full width naturally; this floating button is the only way
+    back in (it re-runs the script with the sidebar state restored).
+    """
+    if st.session_state.get("cm_sidebar_state") != "collapsed":
+        return
+    with st.container():
+        st.markdown('<div class="cm-sidebar-expand-marker"></div>', unsafe_allow_html=True)
+        if st.button("☰", key="cm_expand_sidebar_btn",
+                     help="Expand the sidebar navigation", width="stretch"):
+            st.session_state.cm_sidebar_state = "expanded"
+            st.rerun()
+
+
 def render_sidebar():
+    if st.session_state.get("cm_sidebar_state") == "collapsed":
+        # Collapsed: hide the sidebar entirely (main content expands naturally,
+        # the floating ☰ control restores it). The default Streamlit collapse
+        # button stays removed, so no material-icon ligature can leak.
+        st.markdown(
+            '<style>section[data-testid="stSidebar"]{display:none !important;}</style>',
+            unsafe_allow_html=True,
+        )
+        return
+
     watchlist = st.session_state.setdefault("watchlist", [])
     watchlist_count = len(watchlist)
-    
+
     with st.sidebar:
-        # Custom Minimalist Premium Vector SVG Logo and Luxury Typography
-        st.markdown("""
-            <div style="text-align: center; margin-top: 0.5rem; margin-bottom: 1rem;">
-                <svg width="48" height="48" viewBox="0 0 100 100" style="margin: 0 auto; filter: drop-shadow(0 4px 12px rgba(229, 9, 20, 0.15));">
-                    <circle cx="50" cy="50" r="42" fill="none" stroke="#e50914" stroke-width="2.5" opacity="0.9" />
-                    <circle cx="50" cy="50" r="34" fill="none" stroke="rgba(255,255,255,0.15)" stroke-width="1.5" stroke-dasharray="10 5" />
-                    <polygon points="44,36 66,50 44,64" fill="#ffffff" style="filter: drop-shadow(0 2px 4px rgba(0,0,0,0.4));" />
-                </svg>
-                <h1 style="font-family: 'Space Grotesk', sans-serif !important; font-size: 1.8rem; font-weight: 800 !important; color: #ffffff; margin: 8px 0 0 0; letter-spacing: 4px; text-transform: uppercase;">
-                    CineMatch
-                </h1>
-                <p style="color: #8e8e93; font-size: 0.62rem; margin: 2px 0 0 0; text-transform: uppercase; letter-spacing: 3px; font-weight: 700; font-family: 'Space Grotesk', sans-serif !important;">
-                    AI Discovery Engine
-                </p>
-            </div>
-        """, unsafe_allow_html=True)
+        # Custom premium vector logo lockup + collapse control
+        logo_col, collapse_col = st.columns([8.4, 1.6], gap="small")
+        with logo_col:
+            st.markdown(SIDEBAR_LOGO_HTML, unsafe_allow_html=True)
+        with collapse_col:
+            st.markdown('<div class="cm-side-collapse-marker"></div>', unsafe_allow_html=True)
+            if st.button("❮", key="cm_collapse_sidebar_btn",
+                         help="Collapse the sidebar and give content the full width",
+                         width="stretch"):
+                st.session_state.cm_sidebar_state = "collapsed"
+                st.rerun()
+
+        # Navigation
+        st.markdown('<div class="cm-side-caption">Navigate</div>', unsafe_allow_html=True)
         
-        st.markdown("<hr style='border-color: rgba(255, 255, 255, 0.05); margin: 0 0 1rem 0;'>", unsafe_allow_html=True)
-        st.caption("🧭 Explore Platform")
-        
-        # Navigation Options with Glowing active bullet markers
-        nav_options = ["🏠 Home Landing", "🎯 AI Matcher", "💖 My Watchlist", "💡 Architecture Info"]
+        nav_options = ["Home Landing", "AI Matcher", "My Watchlist", "Architecture Info"]
         page_mapping = {
-            "🏠 Home Landing": "Home",
-            "🎯 AI Matcher": "Recommend",
-            "💖 My Watchlist": "Watchlist",
-            "💡 Architecture Info": "About"
+            "Home Landing": "Home",
+            "AI Matcher": "Recommend",
+            "My Watchlist": "Watchlist",
+            "Architecture Info": "About"
         }
         reverse_mapping = {v: k for k, v in page_mapping.items()}
         
         # Sync the selection state
-        active_label = reverse_mapping.get(st.session_state.active_page, "🏠 Home Landing")
+        active_label = reverse_mapping.get(st.session_state.active_page, "Home Landing")
         active_index = nav_options.index(active_label)
         
         selected_nav = st.radio(
@@ -99,71 +139,57 @@ def render_sidebar():
             st.session_state.active_trailer_movie = None
             st.rerun()
             
-        st.markdown("<hr style='border-color: rgba(255, 255, 255, 0.05); margin: 0.5rem 0 1rem 0;'>", unsafe_allow_html=True)
-        st.caption("📊 Platform Statistics")
-        
-        # Compact Horizontal Stats Flex Grid
+        # Platform statistics
+        st.markdown('<div class="cm-side-caption">Statistics</div>', unsafe_allow_html=True)
         st.markdown(f"""
-            <div style="display: flex; gap: 8px; justify-content: space-between; margin-bottom: 0.5rem;">
-                <div class="sidebar-stat-card" style="flex: 1; padding: 6px 4px;">
-                    <div class="sidebar-stat-val" style="font-size: 0.95rem;">42.1K</div>
-                    <div class="sidebar-stat-label" style="font-size: 0.55rem; letter-spacing: 0.5px;">Titles</div>
+            <div class="cm-stats">
+                <div class="cm-stat">
+                    <div class="cm-stat-value">42.1K</div>
+                    <div class="cm-stat-label">Titles</div>
                 </div>
-                <div class="sidebar-stat-card" style="flex: 1; padding: 6px 4px;">
-                    <div class="sidebar-stat-val" style="font-size: 0.95rem;">{watchlist_count}</div>
-                    <div class="sidebar-stat-label" style="font-size: 0.55rem; letter-spacing: 0.5px;">Saved</div>
+                <div class="cm-stat">
+                    <div class="cm-stat-value">{watchlist_count}</div>
+                    <div class="cm-stat-label">Saved</div>
                 </div>
-                <div class="sidebar-stat-card" style="flex: 1; padding: 6px 4px;">
-                    <div class="sidebar-stat-val" style="font-size: 0.95rem;">&lt;100ms</div>
-                    <div class="sidebar-stat-label" style="font-size: 0.55rem; letter-spacing: 0.5px;">Speed</div>
+                <div class="cm-stat">
+                    <div class="cm-stat-value">&lt;100ms</div>
+                    <div class="cm-stat-label">Speed</div>
                 </div>
             </div>
         """, unsafe_allow_html=True)
         
-        st.markdown("<hr style='border-color: rgba(229, 9, 20, 0.15); margin: 1rem 0;'>", unsafe_allow_html=True)
-        st.caption("🛰️ Server Settings")
+        # TMDB connection status card (network-validated, never "key present = connected")
+        st.markdown('<div class="cm-side-caption">System</div>', unsafe_allow_html=True)
         
-        # TMDB status indicators (network-validated, never "key present = connected")
         api_status = get_api_status()
         if api_status == STATUS_CONNECTED:
             st.markdown("""
-                <div style="background: rgba(46, 204, 113, 0.1); border: 1px solid rgba(46, 204, 113, 0.3); padding: 12px; border-radius: 8px;">
-                    <div style="color: #2ecc71; font-weight: bold; font-size: 0.85rem; display: flex; align-items: center; gap: 6px;">
-                        <span>🟢</span> TMDB API CONNECTED
-                    </div>
-                    <p style="color: #b3b3b3; font-size: 0.75rem; margin: 4px 0 0 0; line-height: 1.4;">
-                        Key validated. High-quality backdrops, trailers, and trending metrics unlocked!
-                    </p>
+                <div class="tmdb-status tmdb-ok">
+                    <div class="tmdb-head"><span class="tmdb-dot"></span><span>TMDB Connected</span></div>
+                    <div class="tmdb-sub">Live movie metadata enabled.</div>
                 </div>
             """, unsafe_allow_html=True)
         elif api_status in (STATUS_INVALID, STATUS_UNREACHABLE):
             st.markdown("""
-                <div style="background: rgba(229, 9, 20, 0.08); border: 1px solid rgba(229, 9, 20, 0.3); padding: 12px; border-radius: 8px;">
-                    <div style="color: #ff4d4d; font-weight: bold; font-size: 0.85rem; display: flex; align-items: center; gap: 6px;">
-                        <span>⚠️</span>TMDB API KEY ISSUE
-                    </div>
-                    <p style="color: #b3b3b3; font-size: 0.75rem; margin: 4px 0 0 0; line-height: 1.4;">
-                        The configured key was rejected or TMDB is unreachable. Showing honest local dataset data until the key works.
-                    </p>
+                <div class="tmdb-status tmdb-warn">
+                    <div class="tmdb-head"><span class="tmdb-dot"></span><span>TMDB API Key Issue</span></div>
+                    <div class="tmdb-sub">The configured key was rejected or TMDB is unreachable. Showing honest local dataset data until the key works.</div>
                 </div>
             """, unsafe_allow_html=True)
         else:
             st.markdown("""
-                <div style="background: rgba(229, 9, 20, 0.08); border: 1px solid rgba(229, 9, 20, 0.3); padding: 12px; border-radius: 8px;">
-                    <div style="color: #ff4d4d; font-weight: bold; font-size: 0.85rem; display: flex; align-items: center; gap: 6px;">
-                        <span>⚠️</span> OFFLINE MODE ACTIVE
-                    </div>
-                    <p style="color: #b3b3b3; font-size: 0.75rem; margin: 4px 0 0 0; line-height: 1.4;">
-                        No valid <code>TMDB_API_KEY</code> detected. Running on real local dataset data. Add your key in <code>.env</code> to unlock live backdrops and trailers.
-                    </p>
+                <div class="tmdb-status tmdb-off">
+                    <div class="tmdb-head"><span class="tmdb-dot"></span><span>Offline Mode</span></div>
+                    <div class="tmdb-sub">No valid TMDB_API_KEY detected. Running on real local dataset data. Add your key in .env to unlock live backdrops and trailers.</div>
                 </div>
             """, unsafe_allow_html=True)
             
-        st.markdown("<br>", unsafe_allow_html=True)
+        st.markdown('<div class="cm-side-foot">CineMatch v2.2.0 · Powered by Streamlit</div>', unsafe_allow_html=True)
 
 # 5. Core Application Main Routing Loop
 def main():
     render_sidebar()
+    render_sidebar_expand_control()
     
     # Route view drawing
     active_page = st.session_state.active_page

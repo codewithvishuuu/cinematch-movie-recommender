@@ -45,8 +45,9 @@ def render_autocomplete_dropdown():
         return
 
     st.markdown("""
-        <div class="section-title-container" style="margin-top: 1rem; margin-bottom: 0.8rem;">
-            <h4 style="margin: 0; font-size: 1.1rem; color: #ff4d4d; font-family:'Montserrat',sans-serif; text-transform: uppercase; letter-spacing:1px;">✨ Live Matches Found</h4>
+        <div class="cm-section-head" style="margin-top: 1rem; margin-bottom: 0.8rem;">
+            <div class="cm-section-accent" style="width: 24px;"></div>
+            <h4 class="cm-section-title" style="font-size: 0.85rem; letter-spacing: 1.6px;">Live Matches Found</h4>
         </div>
     """, unsafe_allow_html=True)
 
@@ -67,7 +68,7 @@ def render_autocomplete_dropdown():
             c_thumb, c_info, c_action = st.columns([1.2, 7.3, 1.5], gap="small")
 
             with c_thumb:
-                st.image(poster_url, use_container_width=True)
+                st.image(poster_url, width="stretch")
 
             with c_info:
                 st.markdown(f"""
@@ -83,7 +84,7 @@ def render_autocomplete_dropdown():
 
             with c_action:
                 # Click action button
-                if st.button("Select", key=f"select_dropdown_{idx}_{title_raw.replace(' ', '_')}", use_container_width=True):
+                if st.button("Select", key=f"select_dropdown_{idx}_{title_raw.replace(' ', '_')}", width="stretch"):
                     with st.spinner(f"Spotlighting '{title_raw}'..."):
                         # Get complete details
                         details = fetch_movie_details(title_raw)
@@ -116,7 +117,7 @@ def render_autocomplete_dropdown():
         # Standard Close button inside the dropdown panel
         c_close_l, c_close_r = st.columns([8.5, 1.5])
         with c_close_r:
-            if st.button("Close Panel", key="close_dropdown_overlay_btn", use_container_width=True, type="secondary"):
+            if st.button("Close Panel", key="close_dropdown_overlay_btn", width="stretch", type="secondary"):
                 st.session_state.autocomplete_results = []
                 st.session_state.search_query = ""
                 st.rerun()

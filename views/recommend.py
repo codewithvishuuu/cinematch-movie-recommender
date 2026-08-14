@@ -2,7 +2,7 @@ import html
 import streamlit as st
 from ml.recommender import get_all_genres, get_recommendations
 from services.tmdb_service import fetch_movie_details
-from components.ui import render_movie_card, render_details_overlay_panel, render_active_trailer_embed
+from components.ui import render_movie_card, render_details_overlay_panel, render_active_trailer_embed, render_section_header
 from components.search_bar import render_search_bar
 from components.autocomplete_dropdown import render_autocomplete_dropdown
 from components.movie_hero import render_movie_hero
@@ -21,11 +21,9 @@ MOOD_BTN_MAP = {
 def render_recommend_view():
     """Renders the advanced premium AI movie matching lab view."""
     st.markdown("""
-        <div class="section-title-container" style="margin-top: 1rem;">
-            <h1 style="margin: 0; font-size: 2.2rem; font-family:'Montserrat', sans-serif; text-shadow: 0 0 15px rgba(229,9,20,0.5);">🔬 AI Movie Intelligence Laboratory</h1>
-        </div>
-        <p style="color: #b3b3b3; font-size: 1.1rem; margin-bottom: 2rem;">
-            Welcome to the AI Lab. Discover films mathematically matched using storylines vectors. Search dynamically, apply mood overrides, and tweak semantic weights.
+        <h1 class="cm-page-title">AI Movie Intelligence Lab</h1>
+        <p class="cm-page-sub">
+            Discover films mathematically matched using storyline vectors. Search dynamically, apply mood overrides, and tweak semantic weights.
         </p>
     """, unsafe_allow_html=True)
     
@@ -49,8 +47,8 @@ def render_recommend_view():
     
     with c_left:
         st.markdown("""
-            <div style="background: rgba(255, 255, 255, 0.02); border: 1px solid rgba(229, 9, 20, 0.20); padding: 25px; border-radius: 12px; margin-bottom: 20px;">
-                <h3 style="margin-top: 0; margin-bottom: 15px; color: #ff4d4d; font-family:'Montserrat',sans-serif;">⚙️ AI Parameter Deck</h3>
+            <div class="cm-panel cm-panel-accent" style="margin-bottom: 20px;">
+                <h3 class="cm-panel-title">AI Parameter Deck</h3>
             </div>
         """, unsafe_allow_html=True)
         
@@ -58,18 +56,14 @@ def render_recommend_view():
         active_search = st.session_state.get("searched_movie", "")
         if active_search:
             st.markdown(f"""
-                <div style="background: rgba(46, 204, 113, 0.1); border: 1px solid rgba(46, 204, 113, 0.3); padding: 12px; border-radius: 8px; margin-bottom: 20px;">
-                    <div style="color: #2ecc71; font-weight: bold; font-size: 0.9rem;">
-                        🎯 Active Reference: {html.escape(str(active_search))}
-                    </div>
+                <div class="cm-banner cm-banner-ok">
+                    Active Reference: {html.escape(str(active_search))}
                 </div>
             """, unsafe_allow_html=True)
         else:
             st.markdown("""
-                <div style="background: rgba(229, 9, 20, 0.08); border: 1px solid rgba(229, 9, 20, 0.25); padding: 12px; border-radius: 8px; margin-bottom: 20px;">
-                    <div style="color: #ff4d4d; font-weight: bold; font-size: 0.9rem;">
-                        ⚠️ No Active Movie Selected. Search above or use chips to begin!
-                    </div>
+                <div class="cm-banner cm-banner-warn">
+                    No active movie selected. Search above or use the suggestion chips to begin.
                 </div>
             """, unsafe_allow_html=True)
             
@@ -94,7 +88,7 @@ def render_recommend_view():
                 is_active = selected_mood_label == label
                 btn_type = "primary" if is_active else "secondary"
                 
-                if st.button(label, key=f"mood_btn_{idx}", type=btn_type, use_container_width=True):
+                if st.button(label, key=f"mood_btn_{idx}", type=btn_type, width="stretch"):
                     selected_mood_label = "None" if is_active else label
                     st.session_state.selected_mood_label = selected_mood_label
                     st.rerun()
@@ -105,7 +99,7 @@ def render_recommend_view():
         st.markdown("<br>", unsafe_allow_html=True)
         
         # Central action trigger
-        if st.button("🚀 Calculate Cosine Similarities", type="primary", use_container_width=True):
+        if st.button("🚀 Calculate Cosine Similarities", type="primary", width="stretch"):
             if not active_search:
                 st.warning("⚠️ Please search or click a quick suggestion trend chip first!")
             else:
@@ -141,8 +135,8 @@ def render_recommend_view():
 
     with c_right:
         st.markdown("""
-            <div style="background: rgba(255, 255, 255, 0.01); border: 1px solid rgba(255, 255, 255, 0.05); padding: 25px; border-radius: 12px; height: 100%;">
-                <h3 style="margin-top: 0; margin-bottom: 15px; color: #ff4d4d; font-family:'Montserrat',sans-serif;">🔬 AI Pipeline Architecture</h3>
+            <div class="cm-panel">
+                <h3 class="cm-panel-title">AI Pipeline Architecture</h3>
                 <p style="color: #b3b3b3; line-height: 1.7; font-size: 0.95rem;">
                     The Laboratory maps storylines using high-dimensional cosine angle spaces on 42,141 canonical records. Precomputed TF-IDF sparse token matrices allow instant evaluation.
                 </p>
@@ -159,16 +153,15 @@ def render_recommend_view():
     
     # 4. Immersive selected movie spotlight hero panel + Recommendations Grid
     if active_search and st.session_state.get("selected_movie_details"):
-        st.markdown("### 🍿 Reference Spotlight")
+        render_section_header("Reference Spotlight", f"Your story reference — {active_search}")
         render_movie_hero(st.session_state.selected_movie_details)
         st.markdown("<br>", unsafe_allow_html=True)
         
     if st.session_state.get("recommendations"):
-        st.markdown(f"""
-            <div class="section-title-container">
-                <h2 style="margin: 0; font-size: 1.6rem; font-family:'Montserrat',sans-serif; border-left: 5px solid #2ecc71; padding-left: 12px;">🎯 Vector Recommendations for "{html.escape(str(active_search))}"</h2>
-            </div>
-        """, unsafe_allow_html=True)
+        render_section_header(
+            f"Vector Recommendations for \"{html.escape(str(active_search))}\"",
+            f"Top {len(st.session_state.recommendations)} story-similar titles, ranked by cosine similarity."
+        )
         
         recs = st.session_state.recommendations
         

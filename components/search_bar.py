@@ -7,12 +7,12 @@ def render_search_bar():
     Includes debounced text inputs, instant submit triggers, and quick suggestion chips.
     """
     st.markdown("""
-        <div class="glass-panel" style="margin-top: 1rem; margin-bottom: 1.5rem; padding: 20px; border: 1px solid rgba(229,9,20,0.25); background: rgba(14,15,20,0.65); box-shadow: 0 10px 30px rgba(0,0,0,0.6);">
+        <div class="cm-panel cm-panel-accent" style="margin-top: 1rem; margin-bottom: 1.5rem; padding: 22px;">
             <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 10px;">
-                <span style="font-size: 1.8rem; text-shadow: 0 0 10px rgba(229,9,20,0.6);">🔍</span>
-                <h3 style="margin: 0; font-family:'Montserrat',sans-serif; color:#ffffff; font-weight:800; font-size: 1.4rem;">Discover Cinematic Masterpieces</h3>
+                <span style="font-size: 1.6rem;">🔍</span>
+                <h3 class="cm-panel-title" style="margin-bottom: 0;">Discover Cinematic Masterpieces</h3>
             </div>
-            <p style="color:#b3b3b3; font-size:0.9rem; margin:0 0 15px 0; line-height: 1.5;">
+            <p style="color:#a6a6b2; font-size:0.9rem; margin:0 0 15px 0; line-height: 1.55;">
                 Type any movie title. Our smart typo-correcting pipeline queries both our local 42,141-title AI database and TMDB live to compile instant recommendations.
             </p>
         </div>
@@ -35,7 +35,7 @@ def render_search_bar():
         )
         
     with c_btn:
-        search_clicked = st.button("Search", key="search_submit_btn", use_container_width=True)
+        search_clicked = st.button("Search", key="search_submit_btn", width="stretch")
 
     # Sync search widget with state
     if search_val != st.session_state.search_query or search_clicked:
@@ -53,7 +53,7 @@ def render_search_bar():
             st.session_state.matched_search_movie = None
             
     # 2. Rendering Quick Suggestion Chips in a clean, spacious 2x5 grid layout
-    st.markdown("<div style='margin-top: 15px; margin-bottom: 8px; font-size: 0.82rem; color: #8e8e93; font-weight: 600;'>🍿 TRENDING SUGGESTIONS:</div>", unsafe_allow_html=True)
+    st.markdown("<div style='margin-top: 15px; margin-bottom: 8px; font-size: 0.78rem; color: #63636e; font-weight: 700; letter-spacing: 1.6px;'>TRENDING SUGGESTIONS</div>", unsafe_allow_html=True)
     
     chips = ["Interstellar", "Inception", "The Dark Knight", "The Avengers", "Toy Story", "Heat", "Gladiator", "Avatar", "Deadpool", "Guardians"]
     
@@ -65,7 +65,7 @@ def render_search_bar():
         cols = st.columns(5)
         for idx, chip in enumerate(chip_list):
             with cols[idx]:
-                if st.button(chip, key=f"chip_{prefix}_{idx}", use_container_width=True, type="secondary"):
+                if st.button(chip, key=f"chip_{prefix}_{idx}", width="stretch", type="secondary"):
                     st.session_state.search_query = chip
                     # Instantly compute recommendations and spotlight
                     with st.spinner(f"Spotlighting '{chip}'..."):

@@ -4,10 +4,8 @@ from components.ui import render_movie_card, render_details_overlay_panel, rende
 def render_watchlist_view():
     """Renders the user's customized Watchlist page."""
     st.markdown("""
-        <div class="section-title-container" style="margin-top: 1rem;">
-            <h1 style="margin: 0; font-size: 2.2rem;">💖 Your Watchlist</h1>
-        </div>
-        <p style="color: #b3b3b3; font-size: 1.1rem; margin-bottom: 2rem;">
+        <h1 class="cm-page-title">Your Watchlist</h1>
+        <p class="cm-page-sub">
             Keep track of the masterpieces you want to experience next. Click details to watch trailers or find matching stories.
         </p>
     """, unsafe_allow_html=True)
@@ -27,10 +25,10 @@ def render_watchlist_view():
     if not watchlist:
         # Beautiful visual empty state
         st.markdown("""
-            <div style="text-align: center; padding: 4rem 2rem; background: rgba(255,255,255,0.02); border-radius: 16px; border: 1px dashed rgba(229, 9, 20, 0.3);">
-                <div style="font-size: 4.5rem; margin-bottom: 1.5rem;">🍿</div>
-                <h3 style="margin-top: 0; margin-bottom: 10px; font-size: 1.5rem; color: #ffffff;">Your Watchlist is Empty</h3>
-                <p style="color: #b3b3b3; max-width: 500px; margin: 0 auto 2rem auto; font-size: 1rem; line-height: 1.6;">
+            <div class="cm-empty">
+                <div style="font-size: 4rem; margin-bottom: 1.2rem;">🍿</div>
+                <h3 style="margin-top: 0; margin-bottom: 10px; font-size: 1.4rem; color: #ffffff;">Your Watchlist is Empty</h3>
+                <p style="color: #a6a6b2; max-width: 520px; margin: 0 auto 2rem auto; font-size: 0.95rem; line-height: 1.65;">
                     Explore trending content on the Home tab or configure intelligent story filters to discover matching titles, then click "+ List" to save them here!
                 </p>
             </div>
@@ -39,7 +37,7 @@ def render_watchlist_view():
         # Call to action button to jump directly to recommender
         cols = st.columns([4, 4, 4])
         with cols[1]:
-            if st.button("🔍 Find Movies to Save", use_container_width=True):
+            if st.button("FIND MOVIES TO SAVE", width="stretch", type="primary"):
                 st.session_state.active_page = "Recommend"
                 st.rerun()
                 
@@ -47,7 +45,7 @@ def render_watchlist_view():
         # Clear Watchlist option
         col_title, col_clear = st.columns([8, 4])
         with col_clear:
-            if st.button("🗑️ Clear Entire Watchlist", use_container_width=True):
+            if st.button("CLEAR ENTIRE WATCHLIST", width="stretch", type="secondary"):
                 st.session_state.watchlist = []
                 st.toast("Cleared watchlist successfully!", icon="🗑️")
                 st.rerun()

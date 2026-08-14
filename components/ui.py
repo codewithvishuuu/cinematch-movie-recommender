@@ -28,7 +28,7 @@ def _rating_str(rating):
 
 
 def inject_netflix_theme():
-    """Injects the custom premium Netflix + Letterboxd CSS into the viewport."""
+    """Injects the CineMatch cinematic UI stylesheet into the viewport."""
     css_path = os.path.join(BASE_DIR, 'assets', 'main.css')
     try:
         with open(css_path, 'r') as f:
@@ -67,68 +67,6 @@ def _valid_backdrop(movie):
     return backdrop_url
 
 
-def render_hero_section(movie):
-    """
-    Renders an immersive, animated, full-width Netflix hero banner.
-    Uses high-fidelity backdrops, radial gradients, metadata and overlay triggers.
-    """
-    if not movie:
-        return
-
-    title = _esc(movie.get("title", "Unknown"))
-    overview = _esc(movie.get("overview", "No description available."))
-    backdrop_url = _valid_backdrop(movie)
-
-    rating = _rating_str(movie.get("rating"))
-    runtime = format_runtime(movie.get("runtime", ""))
-    release_date = movie.get("release_date", "N/A")
-    year = release_date.split("-")[0] if "-" in release_date else (release_date or "N/A")
-    genres = movie.get("genres", []) or []
-    genre_tags = " • ".join(_esc(g) for g in genres)
-
-    # HTML Markup for backdrop background + gradient overlays + details text built cleanly without any leading whitespace to completely bypass Markdown code block conversions
-    hero_html = (
-        "<div class=\"premium-hero\">\n"
-        f"<div class=\"premium-hero-backdrop\" style=\"background-image: url('{backdrop_url}');\"></div>\n"
-        "<div class=\"premium-hero-overlay\">\n"
-        "<span class=\"premium-hero-badge\">🍿 FEATURED BLOCKBUSTER</span>\n"
-        f"<h1 class=\"premium-hero-title\">{title}</h1>\n"
-        f"<div class=\"premium-hero-tagline\">{year}  |  ⭐ {rating}/10  |  ⏱️ {runtime}  |  🎬 {genre_tags}</div>\n"
-        f"<p class=\"premium-hero-overview\">{overview}</p>\n"
-        "</div>\n"
-        "</div>"
-    )
-    st.markdown(hero_html, unsafe_allow_html=True)
-
-    # Interactive CTA controls inside columns immediately below
-    cols = st.columns([2.5, 2.5, 7], gap="small")
-    has_trailer = movie.get("trailer_url") and "youtube.com/watch" in movie.get("trailer_url").lower()
-    title_raw = movie.get("title", "Unknown")
-
-    with cols[0]:
-        if has_trailer:
-            if st.button("▶ Watch Trailer", key=f"hero_play_{title_raw}", use_container_width=True, type="primary"):
-                st.session_state.active_trailer_movie = movie
-                st.rerun()
-        else:
-            st.button("🚫 No Trailer", disabled=True, key=f"hero_no_play_{title_raw}", use_container_width=True)
-
-    with cols[1]:
-        watchlist = st.session_state.setdefault("watchlist", [])
-        is_in_wl = any(w["title"].lower() == title_raw.lower() for w in watchlist)
-
-        if is_in_wl:
-            if st.button("❌ Remove List", key=f"hero_wl_rem_{title_raw}", use_container_width=True, type="secondary"):
-                st.session_state.watchlist = [w for w in watchlist if w["title"].lower() != title_raw.lower()]
-                st.toast(f"Removed '{title_raw}' from watchlist!", icon="🗑️")
-                st.rerun()
-        else:
-            if st.button("➕ Add Watchlist", key=f"hero_wl_add_{title_raw}", use_container_width=True, type="secondary"):
-                st.session_state.watchlist.append(movie)
-                st.toast(f"Added '{title_raw}' to watchlist!", icon="💖")
-                st.rerun()
-
-
 def _valid_poster(movie):
     """Validates and returns a poster URL (honest fallback only when missing)."""
     poster_url = movie.get("poster_url", "")
@@ -142,10 +80,56 @@ def _valid_poster(movie):
     return poster_url
 
 
+def _movie_year(movie):
+    """Extracts a display year from a movie dict's release date."""
+    release_date = movie.get("release_date", "N/A")
+    if "-" in release_date:
+        return release_date.split("-")[0]
+    return release_date or "N/A"
+
+
+def render_section_header(title, subtitle=None):
+    """Renders a cinematic section heading with accent line and optional subtitle."""
+    sub_html = f'<p class="cm-section-sub">{_esc(subtitle)}</p>' if subtitle else ""
+    st.markdown(
+        '<div class="cm-section-head">'
+        '<div class="cm-section-accent"></div>'
+        f'<h2 class="cm-section-title">{_esc(title)}</h2>'
+        f'{sub_html}'
+        '</div>',
+        unsafe_allow_html=True,
+    )
+
+
+def render_skeleton_cards(count=6):
+    """Renders shimmer placeholder cards in a grid matching the real card layout."""
+    cols = st.columns(count, gap="medium")
+    for col in cols:
+        with col:
+            st.markdown(
+                '<div class="cm-skeleton">'
+                '<div class="cm-sk-poster"></div>'
+                '<div class="cm-sk-body">'
+                '<div class="cm-sk-line cm-sk-w70"></div>'
+                '<div class="cm-sk-line cm-sk-w45"></div>'
+                '<div class="cm-sk-line cm-sk-w90"></div>'
+                '</div>'
+                '<div class="cm-sk-actions"><span></span><span></span><span></span></div>'
+                '</div>',
+                unsafe_allow_html=True,
+            )
+
+
+def render_hero_section(movie):
+    """Compatibility alias - renders the premium hero (shared implementation)."""
+    from components.movie_hero import render_movie_hero
+    render_movie_hero(movie)
+
+
 def render_movie_card(movie, key_prefix="card", relevance_score=None, match_reason=None, match_label=None):
     """
-    Renders a premium Netflix movie poster card.
-    Displays the calibrated match label, ratings, genres, and overlays details / trailer triggers.
+    Renders a premium movie card: poster, title, meta, overview, AI insight,
+    and an INFO / PLAY / ADD action row (labels never wrap).
     """
     if not movie:
         return
@@ -153,76 +137,84 @@ def render_movie_card(movie, key_prefix="card", relevance_score=None, match_reas
     title_raw = movie.get("title", "Unknown")
     title = _esc(title_raw)
     poster_url = _valid_poster(movie)
-
     rating = _rating_str(movie.get("rating"))
-    release_date = movie.get("release_date", "N/A")
-    year = release_date.split("-")[0] if "-" in release_date else (release_date or "N/A")
+    year = _movie_year(movie)
+    genres = movie.get("genres", []) or []
     overview = _esc(movie.get("overview", "No synopsis available."))
 
-    # Calibrated match label (percentile of the candidate pool per query).
-    # Legacy percentage math (62 + 35*sim) was removed: raw cosine similarity
-    # is never presented as a probability.
+    # Calibrated match label (unchanged semantics: label, score fallback, generic).
     if match_label:
-        match_badge_html = f'<span class="match-badge">{_esc(str(match_label).upper())}</span>'
+        badge_text = _esc(str(match_label).upper())
     elif relevance_score is not None:
-        match_badge_html = '<span class="match-badge">MATCHED</span>'
+        badge_text = "MATCHED"
     else:
-        # Default fallback badge for popular items without a recommendation score
-        match_badge_html = '<span class="match-badge">POPULAR</span>'
+        badge_text = "POPULAR"
 
-    # Hidden marker for hover scaling selector
-    st.markdown("<div class='movie-card-marker'></div>", unsafe_allow_html=True)
+    genre_row = " · ".join(_esc(g) for g in genres[:3])
+    meta_row = (
+        f'<span class="cm-card-rating">★ {rating}</span>'
+        f'<span class="cm-card-dot">·</span>'
+        f'<span class="cm-card-year">{year}</span>'
+        + (f'<span class="cm-card-dot">·</span><span class="cm-card-genres">{genre_row}</span>' if genre_row else "")
+    )
 
-    # Render the poster image
-    st.image(poster_url, use_container_width=True)
-
-    # Render details and meta
-    st.markdown(f"""
-        <div class="movie-info-panel">
-            <div class="movie-card-title" title="{title}">{title}</div>
-            <div class="movie-card-meta">
-                <span class="rating-badge">⭐ {rating}</span>
-                {match_badge_html}
-                <span class="year-badge">{year}</span>
-            </div>
-            <div class="movie-card-overview">{overview}</div>
-        </div>
-    """, unsafe_allow_html=True)
+    card_html = (
+        '<div class="movie-card-marker"></div>'
+        '<div class="cm-movie-card">'
+        '<div class="cm-poster-frame">'
+        f'<img src="{poster_url}" alt="{title}" loading="lazy" decoding="async" />'
+        '<div class="cm-poster-shade"></div>'
+        f'<span class="cm-card-badge">{badge_text}</span>'
+        '</div>'
+        '<div class="cm-card-body">'
+        f'<div class="cm-card-title" title="{title}">{title}</div>'
+        f'<div class="cm-card-meta">{meta_row}</div>'
+        f'<div class="cm-card-overview">{overview}</div>'
+        '</div>'
+        '</div>'
+    )
+    st.markdown(card_html, unsafe_allow_html=True)
 
     # AI explanation panel if present
     if match_reason:
-        st.markdown(f"""
-            <div class="ai-reason-banner">
-                🧬 <b>AI Insights:</b> {_esc(match_reason)}
-            </div>
-        """, unsafe_allow_html=True)
+        st.markdown(
+            f'<div class="ai-reason-banner"><span class="ai-reason-tag">AI INSIGHT</span> {_esc(match_reason)}</div>',
+            unsafe_allow_html=True,
+        )
 
-    st.markdown("<div style='margin-bottom: 8px;'></div>", unsafe_allow_html=True)
+    # Action row: INFO | PLAY | ADD — equal heights, never-wrapping labels
+    has_trailer = movie.get("trailer_url") and "youtube.com/watch" in movie.get("trailer_url").lower()
+    watchlist = st.session_state.setdefault("watchlist", [])
+    is_in_wl = any(w.get("title", "").lower() == title_raw.lower() for w in watchlist)
 
-    # Subcard buttons
-    c1, c2, c3 = st.columns([1, 1, 1])
+    c1, c2, c3 = st.columns(3, gap="small")
+
     with c1:
-        if st.button("ℹ Info", key=f"{key_prefix}_details_{title_raw}", use_container_width=True, type="secondary"):
+        if st.button("ⓘ INFO", key=f"{key_prefix}_details_{title_raw}", width="stretch",
+                     help="Open the full detail spotlight"):
             st.session_state.selected_movie_details = movie
             st.rerun()
+
     with c2:
-        has_trailer = movie.get("trailer_url") and "youtube.com/watch" in movie.get("trailer_url").lower()
         if has_trailer:
-            if st.button("▶ Play", key=f"{key_prefix}_play_{title_raw}", use_container_width=True, type="secondary"):
+            if st.button("▶ PLAY", key=f"{key_prefix}_play_{title_raw}", width="stretch",
+                         help="Watch the official trailer"):
                 st.session_state.active_trailer_movie = movie
                 st.rerun()
         else:
-            st.button("🚫", disabled=True, key=f"{key_prefix}_noplay_{title_raw}", use_container_width=True)
+            st.button("▶ PLAY", key=f"{key_prefix}_noplay_{title_raw}", width="stretch",
+                      disabled=True, help="No trailer available for this title")
+
     with c3:
-        watchlist = st.session_state.setdefault("watchlist", [])
-        is_in_wl = any(w["title"].lower() == title_raw.lower() for w in watchlist)
         if is_in_wl:
-            if st.button("❤️", key=f"{key_prefix}_wl_{title_raw}", use_container_width=True, type="secondary"):
-                st.session_state.watchlist = [w for w in watchlist if w["title"].lower() != title_raw.lower()]
+            if st.button("✓ SAVED", key=f"{key_prefix}_wl_{title_raw}", width="stretch",
+                         help="Remove from watchlist"):
+                st.session_state.watchlist = [w for w in watchlist if w.get("title", "").lower() != title_raw.lower()]
                 st.toast(f"Removed '{title_raw}' from watchlist!", icon="🗑️")
                 st.rerun()
         else:
-            if st.button("➕", key=f"{key_prefix}_wl_{title_raw}", use_container_width=True, type="secondary"):
+            if st.button("＋ ADD", key=f"{key_prefix}_wl_{title_raw}", width="stretch",
+                         help="Add to watchlist"):
                 st.session_state.watchlist.append(movie)
                 st.toast(f"Added '{title_raw}' to watchlist!", icon="💖")
                 st.rerun()
@@ -230,8 +222,8 @@ def render_movie_card(movie, key_prefix="card", relevance_score=None, match_reas
 
 def render_details_overlay_panel():
     """
-    Renders an immersive detailed Spotlight Panel overlay.
-    Displays detailed stats, genres, full overview, and trailers triggers.
+    Renders the cinematic detail spotlight panel with stats, genres, overview
+    and trailer / watchlist / similar / close actions. Behavior unchanged.
     """
     movie = st.session_state.get("selected_movie_details")
     if not movie:
@@ -245,78 +237,76 @@ def render_details_overlay_panel():
 
     rating = _rating_str(movie.get("rating"))
     runtime = format_runtime(movie.get("runtime", ""))
-    release_date = movie.get("release_date", "N/A")
-    year = release_date.split("-")[0] if "-" in release_date else (release_date or "N/A")
+    year = _movie_year(movie)
     genres = movie.get("genres", []) or []
     trailer_url = movie.get("trailer_url")
 
-    st.markdown("### 🎬 Dynamic Movie Spotlight")
+    st.markdown('<div class="cm-spotlight-title">Movie Spotlight</div>', unsafe_allow_html=True)
 
-    # Styled Glass Panel container
     with st.container():
         genre_spans = " ".join(
-            f'<span style="background:rgba(229,9,20,0.15); border:1px solid rgba(229,9,20,0.3); color:#ff4d4d; font-size:0.8rem; padding:4px 12px; border-radius:20px; font-weight:600;">{_esc(g)}</span>'
+            f'<span class="cm-genre-pill">{_esc(g)}</span>'
             for g in genres
         )
-        st.markdown(f"""
-            <div class="glass-panel" style="margin-bottom: 2rem;">
-                <div style="display: flex; flex-wrap: wrap; gap: 24px;">
-                    <div style="flex: 1 1 250px; max-width: 280px;">
-                        <img src="{poster_url}" style="width:100%; border-radius:12px; box-shadow:0 15px 30px rgba(0,0,0,0.6); border: 1px solid rgba(255,255,255,0.06);" />
-                    </div>
-                    <div style="flex: 2 2 400px; display: flex; flex-direction: column;">
-                        <h2 style="font-family:'Montserrat', sans-serif; font-size: 2.4rem; margin:0 0 10px 0; font-weight:800; color:#ffffff;">{title}</h2>
-                        <div style="display:flex; align-items:center; gap:16px; margin-bottom:18px; color:#b3b3b3; font-size:0.9rem;">
-                            <span style="color:#ff4d4d; font-weight:800; font-size:1.15rem;">⭐ {rating}/10</span>
-                            <span style="background:rgba(255,255,255,0.06); padding:3px 8px; border-radius:4px;">{year}</span>
-                            <span style="background:rgba(255,255,255,0.06); padding:3px 8px; border-radius:4px;">⏱️ {runtime}</span>
-                        </div>
-                        <div style="display:flex; flex-wrap:wrap; gap:8px; margin-bottom:20px;">
-                            {genre_spans}
-                        </div>
-                        <p style="font-size:1rem; line-height:1.6; color:#e0e0e0; margin-bottom:20px;">{overview}</p>
-                    </div>
-                </div>
-            </div>
-        """, unsafe_allow_html=True)
+        st.markdown(
+            '<div class="cm-panel" style="margin-bottom: 1.6rem;">'
+            '<div style="display: flex; flex-wrap: wrap; gap: 24px;">'
+            '<div style="flex: 1 1 240px; max-width: 280px;">'
+            f'<img class="cm-spotlight-poster" src="{poster_url}" alt="{title}" />'
+            '</div>'
+            '<div style="flex: 2 2 420px; display: flex; flex-direction: column; min-width: 0;">'
+            f'<h2 class="cm-hero-title" style="font-size: 2.1rem !important; margin-bottom: 0.8rem !important;">{title}</h2>'
+            '<div style="display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin-bottom: 16px;">'
+            f'<span class="cm-meta-pill cm-meta-rating">★ {rating} / 10</span>'
+            f'<span class="cm-meta-pill">{year}</span>'
+            f'<span class="cm-meta-pill">⏱ {runtime}</span>'
+            '</div>'
+            f'<div style="display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 18px;">{genre_spans}</div>'
+            f'<p style="font-size: 0.95rem; line-height: 1.65; color: #c9c9d4; margin: 0;">{overview}</p>'
+            '</div>'
+            '</div>'
+            '</div>',
+            unsafe_allow_html=True,
+        )
 
         # Action columns inside the spotlight
-        cols = st.columns([2.5, 2.5, 2.5, 4.5])
+        has_trailer = trailer_url and "youtube.com/watch" in trailer_url.lower()
+        watchlist = st.session_state.setdefault("watchlist", [])
+        is_in_wl = any(w.get("title", "").lower() == title_raw.lower() for w in watchlist)
+
+        cols = st.columns([2.2, 2.6, 2.2, 3.0])
         with cols[0]:
-            has_trailer = trailer_url and "youtube.com/watch" in trailer_url.lower()
             if has_trailer:
-                if st.button("▶ Watch Trailer", key="spotlight_trailer_btn", use_container_width=True, type="primary"):
+                if st.button("▶ WATCH TRAILER", key="spotlight_trailer_btn", width="stretch", type="primary"):
                     st.session_state.active_trailer_movie = movie
                     st.rerun()
             else:
-                st.button("🚫 No Trailer", disabled=True, key="spotlight_notrailer_btn", use_container_width=True)
+                st.button("▶ NO TRAILER", key="spotlight_notrailer_btn", width="stretch", disabled=True)
         with cols[1]:
-            watchlist = st.session_state.setdefault("watchlist", [])
-            is_in_wl = any(w["title"].lower() == title_raw.lower() for w in watchlist)
             if is_in_wl:
-                if st.button("❌ Remove List", key="spotlight_wl_btn", use_container_width=True, type="secondary"):
-                    st.session_state.watchlist = [w for w in watchlist if w["title"].lower() != title_raw.lower()]
+                if st.button("✓ REMOVE FROM LIST", key="spotlight_wl_btn", width="stretch", type="secondary"):
+                    st.session_state.watchlist = [w for w in watchlist if w.get("title", "").lower() != title_raw.lower()]
                     st.toast(f"Removed '{title_raw}' from watchlist!", icon="🗑️")
                     st.rerun()
             else:
-                if st.button("💖 Add Watchlist", key="spotlight_wl_btn", use_container_width=True, type="secondary"):
+                if st.button("＋ ADD TO WATCHLIST", key="spotlight_wl_btn", width="stretch", type="secondary"):
                     st.session_state.watchlist.append(movie)
                     st.toast(f"Added '{title_raw}' to watchlist!", icon="💖")
                     st.rerun()
         with cols[2]:
-            if st.button("🎯 Find Similar", key="spotlight_sim_btn", use_container_width=True, type="secondary"):
+            if st.button("🎯 FIND SIMILAR", key="spotlight_sim_btn", width="stretch", type="secondary"):
                 st.session_state.searched_movie = title_raw
                 st.session_state.recommendations = []
                 st.session_state.active_page = "Recommend"
                 st.rerun()
         with cols[3]:
-            if st.button("✖ Close Spotlight", key="spotlight_close_btn", use_container_width=True, type="secondary"):
+            if st.button("✕ CLOSE SPOTLIGHT", key="spotlight_close_btn", width="stretch", type="secondary"):
                 st.session_state.selected_movie_details = None
                 st.rerun()
 
 
 def render_active_trailer_embed():
-    """Renders a beautiful overlay modal block containing the streaming trailer."""
+    """Renders the streaming trailer overlay block. Behavior unchanged."""
     movie = st.session_state.get("active_trailer_movie")
     if not movie:
         return
@@ -330,13 +320,11 @@ def render_active_trailer_embed():
         return
 
     st.markdown("---")
-    st.markdown(f"### 🎬 Watching Trailer: **{title}**")
+    st.markdown(f"<div class='cm-spotlight-title'>Now Playing — {title}</div>", unsafe_allow_html=True)
 
-    # Custom bordered glass frame wrapper using st.container(border=True)
     with st.container(border=True):
         st.video(trailer_url)
 
-        # Close triggers
-        if st.button("✖ Close Video Player", key="close_trailer_player", use_container_width=True):
+        if st.button("✕ CLOSE VIDEO PLAYER", key="close_trailer_player", width="stretch", type="secondary"):
             st.session_state.active_trailer_movie = None
             st.rerun()

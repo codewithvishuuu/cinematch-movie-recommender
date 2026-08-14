@@ -1,36 +1,67 @@
+/* ============================================================================
+   CineMatch — Cinematic UI Design System
+   Dark premium movie-discovery theme (Streamlit 1.x, injected via ui.py)
+   ============================================================================ */
+
 /* Google Fonts Import */
 @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700;800&family=Poppins:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@300;400;500;600;700;800&family=Sora:wght@300;400;500;600;700;800&display=swap');
 
-/* Premium Design Tokens */
+/* ---------------------------------------------------------------------------
+   0. DESIGN TOKENS
+   --------------------------------------------------------------------------- */
 :root {
-    --brand-crimson: #e50914; /* Authentic cinematic red */
-    --brand-crimson-hover: #b81d24;
-    --brand-ambient-glow: rgba(229, 9, 20, 0.12);
-    --bg-obsidian: #060608; /* Pure absolute cinematic black */
-    --bg-panel-glass: rgba(14, 15, 20, 0.75);
-    --border-thin: rgba(255, 255, 255, 0.05);
-    --border-thin-active: rgba(229, 9, 20, 0.35);
-    
-    --text-primary: #f5f5f7; /* High-end silver white */
-    --text-secondary: #8e8e93; /* Matte gray */
-    --text-muted: #515154;
-    
+    --cm-red: #e50914;
+    --cm-red-hot: #ff2a35;
+    --cm-red-dim: rgba(229, 9, 20, 0.12);
+    --cm-red-glow: rgba(229, 9, 20, 0.35);
+    --cm-violet: #8b7bf9;
+    --cm-violet-dim: rgba(139, 123, 249, 0.14);
+    --cm-amber: #f5b944;
+    --cm-green: #3ddc84;
+
+    --cm-bg-0: #050508;
+    --cm-bg-1: #0b0b12;
+    --cm-bg-2: #101018;
+    --cm-card: #0c0c14;
+
+    --cm-text-0: #f6f6f8;
+    --cm-text-1: #a6a6b2;
+    --cm-text-2: #63636e;
+
+    --cm-border: rgba(255, 255, 255, 0.07);
+    --cm-border-strong: rgba(255, 255, 255, 0.13);
+
     --font-heading: 'Space Grotesk', 'Sora', sans-serif;
     --font-body: 'Poppins', sans-serif;
+
+    --radius-card: 12px;
+    --radius-btn: 8px;
+    --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
 }
 
-/* Base Body and Layout Cleanups */
+/* ---------------------------------------------------------------------------
+   1. BASE
+   --------------------------------------------------------------------------- */
 .stApp {
-    background-color: var(--bg-obsidian) !important;
-    background-image: radial-gradient(circle at 50% 0%, #160a0c 0%, var(--bg-obsidian) 80%) !important;
-    color: var(--text-primary) !important;
+    background-color: var(--cm-bg-0) !important;
+    background-image:
+        radial-gradient(1200px 620px at 50% -12%, rgba(229, 9, 20, 0.07), transparent 62%),
+        radial-gradient(900px 520px at 104% 4%, rgba(139, 123, 249, 0.045), transparent 55%),
+        linear-gradient(180deg, #07070c 0%, var(--cm-bg-0) 100%) !important;
+    color: var(--cm-text-0) !important;
     font-family: var(--font-body) !important;
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
 }
 
-/* 1. HIDE ALL DEFAULT STREAMLIT LAYOUT INTERFERENCE */
-header[data-testid="stHeader"], 
-div[data-testid="collapsedControl"], 
-footer, 
+::selection {
+    background: rgba(229, 9, 20, 0.45);
+    color: #ffffff;
+}
+
+/* Hide default Streamlit chrome (header / deploy footer / controls) */
+header[data-testid="stHeader"],
+footer,
 #MainMenu {
     display: none !important;
     visibility: hidden !important;
@@ -40,455 +71,1278 @@ footer,
     margin: 0 !important;
 }
 
-/* Ensure no massive white space or margin remains at top of the page */
-div.block-container {
-    padding-top: 2rem !important;
-    padding-bottom: 3rem !important;
-    padding-left: 3rem !important;
-    padding-right: 3rem !important;
-    max-width: 95% !important;
+/* ---------------------------------------------------------------------------
+   2. "keyboard_double" ROOT-CAUSE FIX
+   Streamlit renders its built-in sidebar collapse button ("stSidebarCollapseButton")
+   with the Material icon ligature :material/keyboard_double_arrow_left:. The
+   glyph only appears if the Material Symbols webfont loads; when it does not,
+   the raw ligature text "keyboard_double_arrow_left" leaks into the visible UI.
+   The app has its own radio navigation, so the default collapse control is
+   removed cleanly. (The floating collapsed-state arrow is hidden too.)
+   --------------------------------------------------------------------------- */
+div[data-testid="stSidebarHeader"],
+button[data-testid="stSidebarCollapseButton"],
+div[data-testid="collapsedControl"],
+div[data-testid="stSidebarCollapseButton"] {
+    display: none !important;
+    visibility: hidden !important;
+    pointer-events: none !important;
 }
 
-/* Custom Scrollbars */
+/* ---------------------------------------------------------------------------
+   3. CANVAS / LAYOUT
+   Centered premium content column: 5-up card rows never stretch edge-to-edge
+   on very wide screens (1500–1600px sweet spot, centered).
+   --------------------------------------------------------------------------- */
+div.block-container {
+    padding: 2.5rem clamp(1.2rem, 4vw, 3.5rem) 4rem !important;
+    max-width: 1560px !important;
+    margin: 0 auto;
+}
+
+/* Custom scrollbars */
 ::-webkit-scrollbar {
-    width: 6px;
-    height: 6px;
+    width: 8px;
+    height: 8px;
 }
 ::-webkit-scrollbar-track {
-    background: var(--bg-obsidian);
+    background: var(--cm-bg-0);
 }
 ::-webkit-scrollbar-thumb {
-    background: rgba(255, 255, 255, 0.1);
-    border-radius: 4px;
-    transition: background 0.3s ease;
+    background: rgba(255, 255, 255, 0.12);
+    border-radius: 6px;
 }
 ::-webkit-scrollbar-thumb:hover {
-    background: var(--brand-crimson);
+    background: var(--cm-red-glow);
 }
 
-/* 2. PREMIUM SIDEBAR SYSTEM (Glassmorphism & Sliding Radio Menu) */
-section[data-testid="stSidebar"] {
-    background: rgba(6, 6, 8, 0.97) !important;
-    backdrop-filter: blur(40px) !important;
-    -webkit-backdrop-filter: blur(40px) !important;
-    border-right: 1px solid var(--border-thin) !important;
-    padding-top: 1.5rem !important;
+/* Streamlit spinner / alerts blending */
+div[data-testid="stSpinner"] {
+    color: var(--cm-text-1) !important;
+    font-size: 0.85rem !important;
+}
+div[data-testid="stAlert"] {
+    background: rgba(229, 9, 20, 0.06) !important;
+    border: 1px solid rgba(229, 9, 20, 0.25) !important;
+    border-radius: var(--radius-btn) !important;
+    color: var(--cm-text-1) !important;
 }
 
-/* Remove default sidebar top spacing */
-section[data-testid="stSidebar"] [data-testid="stVerticalBlock"] {
-    padding-top: 0 !important;
-    gap: 0.5rem !important;
-}
-
-section[data-testid="stSidebar"] div.stRadio > label {
-    color: var(--text-secondary) !important;
-    font-size: 0.75rem !important;
-    text-transform: uppercase;
-    font-weight: 700;
-    letter-spacing: 2px;
-    margin-bottom: 8px;
-    font-family: var(--font-heading) !important;
-}
-
-/* Compact sliding radio navigators */
-div[role="radiogroup"] label[data-baseweb="radio"] {
-    padding: 10px 14px !important;
-    border-radius: 6px !important;
-    margin-bottom: 6px !important;
-    transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1) !important;
-    border-left: 2px solid transparent !important;
-    background: rgba(255, 255, 255, 0.01) !important;
-    width: 100% !important;
-    cursor: pointer !important;
-}
-div[role="radiogroup"] label[data-baseweb="radio"]:hover {
-    background: rgba(255, 255, 255, 0.03) !important;
-    color: #ffffff !important;
-    border-left: 2px solid rgba(255, 255, 255, 0.2) !important;
-    transform: translateX(4px);
-}
-div[role="radiogroup"] label[data-baseweb="radio"]:has(input[aria-checked="true"]) {
-    background: rgba(229, 9, 20, 0.08) !important;
-    color: #ffffff !important;
-    border-left: 2px solid var(--brand-crimson) !important;
-    box-shadow: 0 4px 15px rgba(229, 9, 20, 0.1) !important;
-    font-weight: 600 !important;
-}
-div[role="radiogroup"] label[data-baseweb="radio"] div[data-testid="stMarkdownContainer"] {
-    font-size: 0.88rem !important;
-    font-family: var(--font-heading) !important;
-    font-weight: 600 !important;
-}
-
-/* Elegant stat card deck inside sidebar */
-.sidebar-stat-card {
-    background: rgba(255, 255, 255, 0.015);
-    border: 1px solid var(--border-thin);
-    border-radius: 6px;
-    padding: 10px;
-    margin-bottom: 8px;
-    text-align: center;
-    transition: border-color 0.3s ease;
-}
-.sidebar-stat-card:hover {
-    border-color: var(--border-thin-active);
-}
-.sidebar-stat-val {
-    font-size: 1.25rem;
-    font-weight: 800;
-    color: var(--text-primary);
-    font-family: var(--font-heading);
-    letter-spacing: -0.5px;
-}
-.sidebar-stat-label {
-    font-size: 0.65rem;
-    color: var(--text-secondary);
-    text-transform: uppercase;
-    letter-spacing: 1px;
-    margin-top: 2px;
-}
-
-/* 3. PREMIUM TYPOGRAPHY & HEADER ALIGNMENTS */
+/* ---------------------------------------------------------------------------
+   4. TYPOGRAPHY
+   --------------------------------------------------------------------------- */
 h1, h2, h3, h4, h5, h6 {
     font-family: var(--font-heading) !important;
     font-weight: 800 !important;
-    color: var(--text-primary) !important;
-    letter-spacing: -0.5px;
-    text-shadow: 0 2px 8px rgba(0,0,0,0.6);
+    color: var(--cm-text-0) !important;
+    letter-spacing: -0.4px;
 }
 p, span, label, div {
     font-family: var(--font-body) !important;
 }
-.section-title-container {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    margin-bottom: 1.2rem;
-    border-left: 3px solid var(--brand-crimson);
-    padding-left: 10px;
+
+.cm-page-title {
+    font-size: clamp(1.6rem, 3vw, 2.1rem) !important;
+    font-weight: 800 !important;
+    letter-spacing: -0.5px !important;
+    margin: 0 0 0.35rem 0 !important;
+}
+.cm-page-sub {
+    color: var(--cm-text-1) !important;
+    font-size: 0.95rem !important;
+    margin: 0 0 2rem 0 !important;
+    line-height: 1.6;
 }
 
-/* 4. MOVIE CARD DESIGN (Symmetrical margins, clean hover zoombounds) */
-div[data-testid="column"]:has(.movie-card-marker) {
-    transition: transform 0.5s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.5s ease, border-color 0.5s ease;
-    border-radius: 10px;
+/* ---------------------------------------------------------------------------
+   5. SIDEBAR
+   --------------------------------------------------------------------------- */
+section[data-testid="stSidebar"] {
+    background: rgba(7, 7, 12, 0.98) !important;
+    border-right: 1px solid var(--cm-border) !important;
+}
+section[data-testid="stSidebar"] [data-testid="stVerticalBlock"] {
+    padding-top: 0.75rem !important;
+    gap: 0.4rem !important;
+}
+
+/* Logo lockup */
+.cm-logo {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 0.35rem 0.5rem 0 0.5rem;
+}
+.cm-logo svg {
+    flex: none;
+    filter: drop-shadow(0 4px 14px rgba(229, 9, 20, 0.35));
+}
+.cm-logo-name {
+    font-family: var(--font-heading) !important;
+    font-size: 1.25rem;
+    font-weight: 800;
+    letter-spacing: 2.5px;
+    text-transform: uppercase;
+    color: var(--cm-text-0);
+    line-height: 1.1;
+}
+.cm-logo-sub {
+    font-size: 0.56rem;
+    font-weight: 700;
+    letter-spacing: 2.6px;
+    text-transform: uppercase;
+    color: var(--cm-text-2);
+    margin-top: 3px;
+}
+
+/* Sidebar header row: logo + custom collapse control, unified underline */
+section[data-testid="stSidebar"] div[data-testid="stHorizontalBlock"]:has(.cm-logo) {
+    align-items: center !important;
+    gap: 0.6rem !important;
+    padding-bottom: 0.9rem !important;
+    margin-bottom: 0.4rem !important;
+    border-bottom: 1px solid var(--cm-border) !important;
+}
+
+/* Custom collapse control (chevron) — never shows material ligature text */
+div[data-testid="stColumn"]:has(.cm-side-collapse-marker) div[data-testid="stButton"] button {
+    height: 38px !important;
+    min-height: 38px !important;
     padding: 0 !important;
-    border: 1px solid rgba(255, 255, 255, 0.04);
-    background: #0b0c10;
-    overflow: hidden;
+    border-radius: 10px !important;
+    background: rgba(255, 255, 255, 0.035) !important;
+    border: 1px solid var(--cm-border) !important;
+    color: var(--cm-text-1) !important;
+    font-size: 0.95rem !important;
+    box-shadow: none !important;
+    transition: background 0.18s ease, border-color 0.18s ease, color 0.18s ease !important;
 }
-div[data-testid="column"]:has(.movie-card-marker):hover {
-    transform: translateY(-5px);
-    z-index: 10;
-    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.8), 0 0 20px rgba(229, 9, 20, 0.15);
-    border-color: var(--border-thin-active) !important;
+div[data-testid="stColumn"]:has(.cm-side-collapse-marker) div[data-testid="stButton"] button:hover {
+    background: rgba(229, 9, 20, 0.14) !important;
+    border-color: rgba(229, 9, 20, 0.5) !important;
+    color: #ffffff !important;
 }
-div[data-testid="column"]:has(.movie-card-marker) img {
-    border-top-left-radius: 10px !important;
-    border-top-right-radius: 10px !important;
-    border-bottom-left-radius: 0px !important;
-    border-bottom-right-radius: 0px !important;
-    aspect-ratio: 2/3;
-    object-fit: cover !important;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+div[data-testid="stColumn"]:has(.cm-side-collapse-marker) div[data-testid="stButton"] button:active {
+    transform: scale(0.95) !important;
 }
 
-/* Info drawer underneath poster card */
-.movie-info-panel {
-    padding: 12px;
-    display: flex;
-    flex-direction: column;
-    height: 125px;
-    overflow: hidden;
-    background: #0b0c10;
+/* Floating expand control (☰) — rendered only while the sidebar is collapsed.
+   The wrapper keeps zero height (fixed child is out of flow), so the main
+   content never shifts; the button itself docks top-left like a mini rail. */
+div[data-testid="stLayoutWrapper"]:has(.cm-sidebar-expand-marker) {
+    height: 0 !important;
+    min-height: 0 !important;
+    overflow: visible !important;
 }
-.movie-card-title {
-    font-size: 0.92rem;
-    font-weight: 700;
-    font-family: var(--font-heading);
-    color: var(--text-primary);
-    margin-bottom: 4px;
+div[data-testid="stLayoutWrapper"]:has(.cm-sidebar-expand-marker) div[data-testid="stButton"] {
+    position: fixed !important;
+    top: 14px !important;
+    left: 14px !important;
+    z-index: 1000 !important;
+    width: auto !important;
+}
+div[data-testid="stLayoutWrapper"]:has(.cm-sidebar-expand-marker) div[data-testid="stButton"] button {
+    width: 44px !important;
+    height: 44px !important;
+    min-height: 44px !important;
+    padding: 0 !important;
+    border-radius: 12px !important;
+    font-size: 1.1rem !important;
+    background: rgba(10, 10, 17, 0.92) !important;
+    border: 1px solid rgba(255, 255, 255, 0.16) !important;
+    color: #ffffff !important;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.55) !important;
+    animation: cm-fade-in 0.3s ease both;
+}
+div[data-testid="stLayoutWrapper"]:has(.cm-sidebar-expand-marker) div[data-testid="stButton"] button:hover {
+    background: var(--cm-red) !important;
+    border-color: rgba(255, 255, 255, 0.28) !important;
+    transform: translateY(-1px) !important;
+}
+
+/* Section captions */
+.cm-side-caption {
+    font-family: var(--font-heading) !important;
+    font-size: 0.62rem !important;
+    font-weight: 700 !important;
+    letter-spacing: 2.4px !important;
+    text-transform: uppercase !important;
+    color: var(--cm-text-2) !important;
+    padding: 0.9rem 0.5rem 0.35rem 0.5rem !important;
+}
+
+/* Radio navigation */
+div[role="radiogroup"] label[data-baseweb="radio"] {
+    padding: 9px 12px !important;
+    border-radius: var(--radius-btn) !important;
+    margin-bottom: 3px !important;
+    border: 1px solid transparent !important;
+    background: transparent !important;
+    width: 100% !important;
+    cursor: pointer !important;
+    display: flex !important;
+    align-items: center !important;
+    gap: 10px !important;
+    transition: background 0.16s ease, border-color 0.16s ease, transform 0.16s ease !important;
+}
+div[role="radiogroup"] label[data-baseweb="radio"]::before {
+    content: "" !important;
+    width: 5px;
+    height: 5px;
+    border-radius: 50%;
+    background: #3a3a46;
+    flex: none;
+    transition: background 0.16s ease, box-shadow 0.16s ease;
+}
+div[role="radiogroup"] label[data-baseweb="radio"]:hover {
+    background: rgba(255, 255, 255, 0.045) !important;
+    border-color: rgba(255, 255, 255, 0.09) !important;
+    transform: translateX(2px);
+}
+div[role="radiogroup"] label[data-baseweb="radio"]:hover::before {
+    background: var(--cm-text-1);
+}
+div[role="radiogroup"] label[data-baseweb="radio"]:has(input[aria-checked="true"]),
+div[role="radiogroup"] label[data-baseweb="radio"]:has(input:checked) {
+    background: linear-gradient(90deg, rgba(229, 9, 20, 0.16), rgba(229, 9, 20, 0.03)) !important;
+    border-color: rgba(229, 9, 20, 0.38) !important;
+}
+div[role="radiogroup"] label[data-baseweb="radio"]:has(input[aria-checked="true"])::before,
+div[role="radiogroup"] label[data-baseweb="radio"]:has(input:checked)::before {
+    background: var(--cm-red-hot);
+    box-shadow: 0 0 8px var(--cm-red-glow);
+}
+div[role="radiogroup"] label[data-baseweb="radio"] div {
+    font-family: var(--font-heading) !important;
+    font-size: 0.86rem !important;
+    font-weight: 600 !important;
+    color: var(--cm-text-1) !important;
+    letter-spacing: 0.3px !important;
     white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
 }
-.movie-card-meta {
+div[role="radiogroup"] label[data-baseweb="radio"]:has(input[aria-checked="true"]) div,
+div[role="radiogroup"] label[data-baseweb="radio"]:has(input:checked) div {
+    color: var(--cm-text-0) !important;
+}
+
+/* Platform statistics */
+.cm-stats {
+    display: flex;
+    gap: 8px;
+    padding: 0 0.5rem;
+}
+.cm-stat {
+    flex: 1;
+    text-align: center;
+    background: rgba(255, 255, 255, 0.02);
+    border: 1px solid var(--cm-border);
+    border-radius: var(--radius-btn);
+    padding: 8px 4px;
+    transition: border-color 0.2s ease, transform 0.2s ease;
+}
+.cm-stat:hover {
+    border-color: rgba(229, 9, 20, 0.4);
+    transform: translateY(-1px);
+}
+.cm-stat-value {
+    font-family: var(--font-heading) !important;
+    font-size: 0.95rem;
+    font-weight: 800;
+    color: var(--cm-text-0);
+    letter-spacing: -0.3px;
+}
+.cm-stat-label {
+    font-size: 0.55rem;
+    font-weight: 700;
+    letter-spacing: 1.2px;
+    text-transform: uppercase;
+    color: var(--cm-text-2);
+    margin-top: 2px;
+}
+
+/* TMDB connection status card */
+.tmdb-status {
+    margin: 0 0.5rem;
+    border-radius: 10px;
+    padding: 12px 13px;
+    border: 1px solid var(--cm-border);
+    background: rgba(255, 255, 255, 0.02);
+}
+.tmdb-head {
     display: flex;
     align-items: center;
-    justify-content: space-between;
-    font-size: 0.72rem;
-    color: var(--text-secondary);
-    margin-bottom: 6px;
-}
-.rating-badge {
-    color: #ffaa00; /* Luxury warm rating amber */
+    gap: 8px;
+    font-family: var(--font-heading) !important;
+    font-size: 0.78rem;
     font-weight: 700;
+    letter-spacing: 0.8px;
+    text-transform: uppercase;
 }
-.match-badge {
-    background: rgba(46, 204, 113, 0.08);
-    border: 1px solid rgba(46, 204, 113, 0.2);
-    color: #2ecc71;
-    font-weight: 700;
-    padding: 1px 5px;
-    border-radius: 3px;
-    font-size: 0.65rem;
+.tmdb-dot {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    flex: none;
 }
-.year-badge {
-    background: rgba(255, 255, 255, 0.05);
-    padding: 1px 5px;
-    border-radius: 3px;
+.tmdb-sub {
+    font-size: 0.7rem;
+    color: var(--cm-text-1);
+    line-height: 1.45;
+    margin-top: 6px;
 }
-.movie-card-overview {
-    font-size: 0.75rem;
-    color: var(--text-secondary);
-    line-height: 1.4;
-    display: -webkit-box;
-    -webkit-line-clamp: 2;
-    -webkit-box-orient: vertical;
-    overflow: hidden;
+.tmdb-status.tmdb-ok {
+    border-color: rgba(61, 220, 132, 0.3);
+    background: rgba(61, 220, 132, 0.06);
+}
+.tmdb-ok .tmdb-head { color: #4ade80; }
+.tmdb-ok .tmdb-dot {
+    background: var(--cm-green);
+    box-shadow: 0 0 8px rgba(61, 220, 132, 0.7);
+    animation: cm-pulse 2.4s var(--ease-out) infinite;
+}
+.tmdb-status.tmdb-warn {
+    border-color: rgba(229, 9, 20, 0.35);
+    background: rgba(229, 9, 20, 0.07);
+}
+.tmdb-warn .tmdb-head { color: #ff6b74; }
+.tmdb-warn .tmdb-dot {
+    background: var(--cm-red-hot);
+    box-shadow: 0 0 8px var(--cm-red-glow);
+}
+.tmdb-status.tmdb-off {
+    border-color: rgba(255, 255, 255, 0.1);
+}
+.tmdb-off .tmdb-head { color: var(--cm-text-1); }
+.tmdb-off .tmdb-dot {
+    background: var(--cm-text-2);
 }
 
-/* 5. CINEMATIC SPOTLIGHT HERO STYLE */
-.premium-hero {
+.cm-side-foot {
+    margin-top: 1.2rem;
+    padding: 0 0.5rem;
+    font-size: 0.6rem;
+    letter-spacing: 1.4px;
+    text-transform: uppercase;
+    color: var(--cm-text-2);
+    text-align: center;
+}
+
+/* ---------------------------------------------------------------------------
+   6. BUTTON DESIGN SYSTEM
+   --------------------------------------------------------------------------- */
+/* Absolute safety net: with help= set, Streamlit wraps the <button> in a
+   tooltip wrapper div, so `> button` never matches. Descendant selectors +
+   this global rule guarantee labels can NEVER split into INF/O/PLA/Y/AD/D. */
+button[data-testid^="stBaseButton-"],
+button[data-testid^="stBaseButton-"] * {
+    white-space: nowrap !important;
+}
+div[data-testid="stButton"] button {
+    border-radius: var(--radius-btn) !important;
+    font-family: var(--font-heading) !important;
+    font-weight: 600 !important;
+    font-size: 0.8rem !important;
+    letter-spacing: 0.5px !important;
+    min-height: 36px !important;
+    white-space: nowrap !important;
+    overflow: hidden !important;
+    text-overflow: clip !important;
+    cursor: pointer !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    gap: 6px !important;
+    border: 1px solid transparent !important;
+    transition: transform 0.18s ease, background 0.18s ease, border-color 0.18s ease,
+                box-shadow 0.18s ease, color 0.18s ease, opacity 0.18s ease !important;
+}
+div[data-testid="stButton"] button span {
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    white-space: nowrap !important;
+}
+
+/* Primary — cinematic red */
+div[data-testid="stButton"] button[kind="primary"] {
+    background: linear-gradient(180deg, #f40814 0%, var(--cm-red) 55%, #c40812 100%) !important;
+    color: #ffffff !important;
+    border: 1px solid rgba(255, 255, 255, 0.14) !important;
+    box-shadow: 0 6px 20px rgba(229, 9, 20, 0.32), inset 0 1px 0 rgba(255, 255, 255, 0.16) !important;
+}
+div[data-testid="stButton"] button[kind="primary"]:hover {
+    background: linear-gradient(180deg, #ff3d47 0%, #ee0a15 60%, #d40a14 100%) !important;
+    transform: translateY(-1px) !important;
+    box-shadow: 0 10px 26px rgba(229, 9, 20, 0.45), inset 0 1px 0 rgba(255, 255, 255, 0.2) !important;
+}
+div[data-testid="stButton"] button[kind="primary"]:active {
+    transform: translateY(0) scale(0.98) !important;
+}
+
+/* Secondary — dark glass */
+div[data-testid="stButton"] button[kind="secondary"],
+div[data-testid="stButton"] button:not([kind]) {
+    background: rgba(255, 255, 255, 0.05) !important;
+    border: 1px solid var(--cm-border-strong) !important;
+    color: var(--cm-text-0) !important;
+}
+div[data-testid="stButton"] button[kind="secondary"]:hover,
+div[data-testid="stButton"] button:not([kind]):hover {
+    background: rgba(255, 255, 255, 0.1) !important;
+    border-color: rgba(255, 255, 255, 0.24) !important;
+    transform: translateY(-1px) !important;
+}
+div[data-testid="stButton"] button:not([kind]):hover {
+    border-color: rgba(229, 9, 20, 0.45) !important;
+}
+div[data-testid="stButton"] button[kind="secondary"]:active,
+div[data-testid="stButton"] button:not([kind]):active {
+    transform: translateY(0) scale(0.98) !important;
+}
+
+/* Disabled */
+div[data-testid="stButton"] button:disabled {
+    opacity: 0.42 !important;
+    cursor: not-allowed !important;
+    transform: none !important;
+    box-shadow: none !important;
+}
+
+/* Accessible focus */
+div[data-testid="stButton"] button:focus-visible,
+input:focus-visible,
+textarea:focus-visible {
+    outline: 2px solid rgba(139, 123, 249, 0.85) !important;
+    outline-offset: 2px !important;
+}
+
+/* ---------------------------------------------------------------------------
+   7. HERO BANNER
+   --------------------------------------------------------------------------- */
+.cm-hero {
     position: relative;
-    border-radius: 12px;
+    border-radius: 14px;
     overflow: hidden;
-    margin-bottom: 2rem;
-    box-shadow: 0 20px 45px rgba(0,0,0,0.8);
-    border: 1px solid rgba(255, 255, 255, 0.04);
-    height: 440px;
+    border: 1px solid var(--cm-border);
+    background: var(--cm-bg-1);
+    height: clamp(400px, 54vh, 540px);
+    box-shadow: 0 24px 55px rgba(0, 0, 0, 0.7);
+    animation: cm-fade-in 0.55s ease both;
+    margin-bottom: 1.6rem;
 }
-.premium-hero-backdrop {
+.cm-hero-backdrop {
     position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
+    inset: 0;
     background-size: cover;
-    background-position: center 20%;
-    z-index: 1;
-    transition: transform 8s cubic-bezier(0.16, 1, 0.3, 1);
+    background-position: center 22%;
+    transform: scale(1.05);
+    transition: transform 1.4s var(--ease-out);
+    will-change: transform;
 }
-.premium-hero:hover .premium-hero-backdrop {
-    transform: scale(1.02);
+.cm-hero:hover .cm-hero-backdrop {
+    transform: scale(1.1);
 }
-.premium-hero-overlay {
+.cm-hero-scrim {
+    position: absolute;
+    inset: 0;
+    background:
+        linear-gradient(90deg, rgba(5, 5, 8, 0.97) 0%, rgba(5, 5, 8, 0.82) 34%, rgba(5, 5, 8, 0.38) 62%, rgba(5, 5, 8, 0.06) 82%),
+        linear-gradient(0deg, rgba(5, 5, 8, 0.92) 0%, rgba(5, 5, 8, 0.32) 26%, rgba(5, 5, 8, 0) 58%);
+}
+.cm-hero-content {
     position: relative;
     z-index: 2;
-    background: linear-gradient(to right, rgba(6, 6, 8, 1) 32%, rgba(6, 6, 8, 0.8) 50%, rgba(6, 6, 8, 0) 100%),
-                linear-gradient(to top, rgba(6, 6, 8, 1) 0%, rgba(6, 6, 8, 0) 30%);
-    padding: 4rem 3rem;
-    color: var(--text-primary);
     height: 100%;
     display: flex;
     flex-direction: column;
     justify-content: center;
+    padding: clamp(1.6rem, 4vw, 3.4rem) clamp(1.2rem, 4vw, 3.2rem);
+    max-width: 58%;
 }
-.premium-hero-badge {
-    background: rgba(229, 9, 20, 0.15);
-    border: 1px solid rgba(229, 9, 20, 0.4);
-    color: #ff333d;
-    font-size: 0.65rem;
-    font-weight: 800;
-    text-transform: uppercase;
-    padding: 4px 8px;
-    border-radius: 4px;
-    letter-spacing: 2px;
-    display: inline-block;
-    margin-bottom: 0.8rem;
-    width: fit-content;
-    font-family: var(--font-heading);
+.cm-hero-content > * {
+    animation: cm-fade-up 0.6s var(--ease-out) both;
 }
-.premium-hero-title {
+.cm-hero-content > *:nth-child(2) { animation-delay: 0.07s; }
+.cm-hero-content > *:nth-child(3) { animation-delay: 0.14s; }
+.cm-hero-content > *:nth-child(4) { animation-delay: 0.21s; }
+.cm-hero-content > *:nth-child(5) { animation-delay: 0.28s; }
+
+.cm-hero-kicker {
+    display: inline-flex;
+    align-items: center;
+    gap: 9px;
     font-family: var(--font-heading) !important;
-    font-weight: 900 !important;
-    font-size: 3.6rem;
-    line-height: 1.05;
-    margin-bottom: 0.5rem;
-    letter-spacing: -1px;
-    text-shadow: 0 4px 12px rgba(0,0,0,0.8);
+    font-size: 0.66rem;
+    font-weight: 700;
+    letter-spacing: 2.6px;
+    text-transform: uppercase;
+    color: #ff5a63;
+    margin-bottom: 0.7rem;
+    align-self: flex-start;
 }
-.premium-hero-tagline {
-    font-size: 0.95rem;
-    color: var(--text-secondary);
-    font-weight: 500;
-    margin-bottom: 1rem;
+.cm-kicker-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--cm-red-hot);
+    box-shadow: 0 0 10px var(--cm-red-glow);
+    animation: cm-pulse 2.4s var(--ease-out) infinite;
+}
+.cm-hero-title {
+    font-size: clamp(2.1rem, 4.5vw, 3.5rem) !important;
+    font-weight: 900 !important;
+    line-height: 1.05 !important;
+    letter-spacing: -1px !important;
+    margin: 0 0 0.9rem 0 !important;
+    text-shadow: 0 4px 16px rgba(0, 0, 0, 0.85);
+}
+.cm-hero-meta {
     display: flex;
+    flex-wrap: wrap;
     align-items: center;
     gap: 8px;
-}
-.premium-hero-overview {
-    font-size: 0.92rem;
-    max-width: 600px;
-    color: var(--text-secondary);
-    line-height: 1.5;
     margin-bottom: 1rem;
+}
+.cm-meta-pill {
+    background: rgba(255, 255, 255, 0.07);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: 999px;
+    padding: 4px 11px;
+    font-family: var(--font-heading) !important;
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.4px;
+    color: #d9d9e2;
+    white-space: nowrap;
+}
+.cm-meta-pill.cm-meta-rating {
+    color: var(--cm-amber);
+    border-color: rgba(245, 185, 68, 0.3);
+    background: rgba(245, 185, 68, 0.08);
+}
+.cm-meta-genres {
+    font-size: 0.76rem;
+    color: var(--cm-text-1);
+    letter-spacing: 0.3px;
+}
+.cm-hero-overview {
+    font-size: 0.9rem;
+    line-height: 1.6;
+    color: #c9c9d4;
+    max-width: 620px;
+    margin: 0 0 1rem 0;
     display: -webkit-box;
     -webkit-line-clamp: 3;
     -webkit-box-orient: vertical;
     overflow: hidden;
 }
-
-/* 6. STREAMLIT WIDGETS OVERRIDES (INPUTS & BUTTONS) */
-/* Text input */
-input, textarea, div[data-baseweb="select"] > div {
-    background-color: #0b0c10 !important;
-    color: var(--text-primary) !important;
-    border: 1px solid rgba(255, 255, 255, 0.08) !important;
-    border-radius: 6px !important;
-    box-shadow: inset 0 2px 4px rgba(0,0,0,0.5) !important;
-    transition: all 0.3s ease !important;
+.cm-hero-cast {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: 8px;
+    font-size: 0.72rem;
 }
-input:focus, div[data-baseweb="select"] > div:focus-within {
-    border-color: rgba(229, 9, 20, 0.4) !important;
-    box-shadow: 0 0 15px rgba(229, 9, 20, 0.15) !important;
-}
-
-/* Absolute Luxury Platform Button Design Override */
-div[data-testid="stButton"] > button {
-    border-radius: 6px !important;
-    font-weight: 600 !important;
-    font-size: 0.85rem !important;
-    padding: 0.45rem 1rem !important;
-    transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1) !important;
-    text-transform: uppercase !important;
-    letter-spacing: 0.5px !important;
+.cm-cast-label {
     font-family: var(--font-heading) !important;
+    font-weight: 700;
+    letter-spacing: 1.8px;
+    text-transform: uppercase;
+    color: var(--cm-text-2);
+}
+.cm-cast-names {
+    color: var(--cm-text-1);
+    font-weight: 500;
 }
 
-/* Primary white action button (e.g. Play) */
-div[data-testid="stButton"] > button[kind="primary"] {
-    background: #ffffff !important;
-    color: #000000 !important;
-    border: 1px solid #ffffff !important;
-    box-shadow: 0 4px 15px rgba(255, 255, 255, 0.15) !important;
+/* Hero action row (marker-scoped) — premium CTA sizing, labels never wrap.
+   The marker markdown lives in column 1 above the trailer button, so it and
+   any wrapper gaps must be removed from flow — otherwise ADD TO WATCHLIST
+   (column 2, no marker) sits visibly higher than WATCH TRAILER. */
+div[data-testid="stHorizontalBlock"]:has(.cm-hero-actions-marker) {
+    margin-top: 0.8rem;
+    margin-bottom: 2.4rem;
 }
-div[data-testid="stButton"] > button[kind="primary"]:hover {
-    background: rgba(255, 255, 255, 0.85) !important;
-    transform: translateY(-2px);
-    box-shadow: 0 6px 20px rgba(255, 255, 255, 0.25) !important;
+div[data-testid="stHorizontalBlock"]:has(.cm-hero-actions-marker) > div[data-testid="stColumn"] {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
 }
-
-/* Secondary ghost glass button */
-div[data-testid="stButton"] > button[kind="secondary"] {
-    background: rgba(255, 255, 255, 0.06) !important;
-    border: 1px solid rgba(255, 255, 255, 0.1) !important;
-    color: var(--text-primary) !important;
+div[data-testid="stHorizontalBlock"]:has(.cm-hero-actions-marker) > div[data-testid="stColumn"] > div[data-testid="stVerticalBlock"] {
+    gap: 0 !important;
 }
-div[data-testid="stButton"] > button[kind="secondary"]:hover {
-    background: rgba(255, 255, 255, 0.12) !important;
-    border-color: rgba(255, 255, 255, 0.2) !important;
-    transform: translateY(-2px);
+div[data-testid="stHorizontalBlock"]:has(.cm-hero-actions-marker) div[data-testid="stElementContainer"]:has(.cm-hero-actions-marker) {
+    display: none !important;
 }
-
-/* Standard default streamlit button behavior mapping */
-div[data-testid="stButton"] > button:not([kind]) {
-    background: rgba(255, 255, 255, 0.06) !important;
-    border: 1px solid rgba(255, 255, 255, 0.1) !important;
-    color: var(--text-primary) !important;
+div[data-testid="stHorizontalBlock"]:has(.cm-hero-actions-marker) div[data-testid="stButton"] button {
+    min-height: 46px !important;
+    height: 46px !important;
+    font-size: 0.84rem !important;
+    padding: 0 1.4rem !important;
+    border-radius: 10px !important;
+    letter-spacing: 0.8px !important;
+    box-shadow: 0 10px 26px rgba(0, 0, 0, 0.35) !important;
 }
-div[data-testid="stButton"] > button:not([kind]):hover {
-    background: rgba(229, 9, 20, 0.12) !important;
-    border-color: rgba(229, 9, 20, 0.3) !important;
-    color: #ffffff !important;
-    transform: translateY(-2px);
+div[data-testid="stHorizontalBlock"]:has(.cm-hero-actions-marker) div[data-testid="stButton"] button * {
+    white-space: nowrap !important;
 }
 
-/* 7. GLASSMORPHIC DETAILS spotlight drawer overlay */
-.glass-panel {
-    background: rgba(11, 12, 16, 0.95) !important;
-    backdrop-filter: blur(25px) !important;
-    -webkit-backdrop-filter: blur(25px) !important;
-    border: 1px solid rgba(255, 255, 255, 0.05) !important;
-    border-radius: 10px;
-    padding: 20px;
-    box-shadow: 0 20px 50px rgba(0,0,0,0.8);
+/* ---------------------------------------------------------------------------
+   8. SECTIONS
+   --------------------------------------------------------------------------- */
+.cm-section-head {
+    margin: 3rem 0 1.15rem 0;
+    animation: cm-fade-up 0.5s var(--ease-out) both;
+}
+.cm-section-accent {
+    width: 34px;
+    height: 3px;
+    border-radius: 2px;
+    background: linear-gradient(90deg, var(--cm-red-hot), rgba(229, 9, 20, 0.2));
+    margin-bottom: 0.7rem;
+}
+.cm-section-title {
+    font-size: clamp(1.1rem, 2vw, 1.35rem) !important;
+    letter-spacing: 1.4px !important;
+    text-transform: uppercase !important;
+    margin: 0 !important;
+}
+.cm-section-sub {
+    color: var(--cm-text-1) !important;
+    font-size: 0.85rem !important;
+    margin: 0.35rem 0 0 0 !important;
 }
 
-/* AI Insights micro-banner inside spotlight overlay */
+/* ---------------------------------------------------------------------------
+   9. MOVIE CARDS
+   Selectors use the Streamlit 1.5x DOM (stColumn / stHorizontalBlock /
+   stVerticalBlock / stElementContainer). The .movie-card-marker is kept purely
+   as a stable CSS hook; it is not visible.
+   --------------------------------------------------------------------------- */
+
+.movie-card-marker {
+    display: none !important;
+}
+
+/* Movie row grid: equal cards, consistent gap */
+div[data-testid="stHorizontalBlock"]:has(.movie-card-marker, .cm-skeleton) {
+    gap: 1.25rem !important;
+}
+div[data-testid="stHorizontalBlock"]:has(.movie-card-marker, .cm-skeleton) > div[data-testid="stColumn"] {
+    flex: 1 1 0 !important;
+    min-width: 0 !important;
+    max-width: none !important;
+}
+
+/* Card column = the visual card frame; hover lift happens here (no layout jump) */
+div[data-testid="stColumn"]:has(.movie-card-marker) {
+    background: var(--cm-card) !important;
+    border: 1px solid var(--cm-border) !important;
+    border-radius: var(--radius-card) !important;
+    overflow: hidden !important;
+    padding: 0 !important;
+    display: flex !important;
+    position: relative;
+    z-index: 1;
+    transition: transform 0.22s var(--ease-out), box-shadow 0.22s ease, border-color 0.22s ease !important;
+}
+div[data-testid="stColumn"]:has(.movie-card-marker) > div[data-testid="stVerticalBlock"] {
+    display: flex;
+    flex-direction: column;
+    flex: 1 1 auto;
+    min-width: 0;
+    height: 100%;
+    gap: 0 !important;
+}
+div[data-testid="stColumn"]:has(.movie-card-marker) > div[data-testid="stVerticalBlock"] > div[data-testid="stElementContainer"] {
+    flex: 0 0 auto !important;
+    min-height: 0 !important;
+}
+div[data-testid="stColumn"]:has(.movie-card-marker) > div[data-testid="stVerticalBlock"] > div[data-testid="stElementContainer"]:has(.cm-movie-card) {
+    flex: 1 1 auto !important;
+    display: flex !important;
+    flex-direction: column !important;
+}
+div[data-testid="stColumn"]:has(.movie-card-marker):hover {
+    transform: translateY(-4px) !important;
+    z-index: 5;
+    border-color: rgba(229, 9, 20, 0.5) !important;
+    box-shadow:
+        0 14px 34px rgba(0, 0, 0, 0.72),
+        0 0 0 1px rgba(229, 9, 20, 0.18),
+        0 8px 30px rgba(229, 9, 20, 0.12) !important;
+}
+
+.cm-movie-card {
+    display: flex;
+    flex-direction: column;
+    flex: 1 1 auto;
+    min-width: 0;
+    animation: cm-card-in 0.5s var(--ease-out) both;
+}
+div[data-testid="stHorizontalBlock"] > div[data-testid="stColumn"]:has(.movie-card-marker):nth-child(2) .cm-movie-card { animation-delay: 0.04s; }
+div[data-testid="stHorizontalBlock"] > div[data-testid="stColumn"]:has(.movie-card-marker):nth-child(3) .cm-movie-card { animation-delay: 0.08s; }
+div[data-testid="stHorizontalBlock"] > div[data-testid="stColumn"]:has(.movie-card-marker):nth-child(4) .cm-movie-card { animation-delay: 0.12s; }
+div[data-testid="stHorizontalBlock"] > div[data-testid="stColumn"]:has(.movie-card-marker):nth-child(5) .cm-movie-card { animation-delay: 0.16s; }
+div[data-testid="stHorizontalBlock"] > div[data-testid="stColumn"]:has(.movie-card-marker):nth-child(6) .cm-movie-card { animation-delay: 0.2s; }
+
+/* Poster */
+.cm-poster-frame {
+    position: relative;
+    aspect-ratio: 2 / 3;
+    overflow: hidden;
+    background: #0d0d15;
+    border-bottom: 1px solid var(--cm-border);
+}
+.cm-poster-frame img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+    transition: transform 0.3s var(--ease-out), filter 0.3s ease;
+}
+div[data-testid="stColumn"]:has(.movie-card-marker):hover .cm-poster-frame img {
+    transform: scale(1.035);
+}
+.cm-poster-shade {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(180deg, rgba(5, 5, 8, 0) 55%, rgba(5, 5, 8, 0.55) 100%);
+    opacity: 0.65;
+    transition: opacity 0.25s ease;
+}
+div[data-testid="stColumn"]:has(.movie-card-marker):hover .cm-poster-shade {
+    opacity: 1;
+}
+.cm-card-badge {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    background: rgba(8, 8, 13, 0.72);
+    backdrop-filter: blur(6px);
+    border: 1px solid rgba(255, 255, 255, 0.14);
+    border-radius: 999px;
+    padding: 3px 9px;
+    font-family: var(--font-heading) !important;
+    font-size: 0.58rem;
+    font-weight: 800;
+    letter-spacing: 1.2px;
+    color: var(--cm-text-0);
+    white-space: nowrap;
+    max-width: calc(100% - 20px);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    pointer-events: none;
+}
+
+/* Card body — platform-style composition with readable hierarchy.
+   padding-bottom stays small; the description's margin-bottom + the action
+   row's margin-top:auto supply the visible breathing room. */
+.cm-card-body {
+    display: flex;
+    flex-direction: column;
+    flex: 1 1 auto;
+    padding: 13px 14px 4px 14px;
+    min-width: 0;
+}
+.cm-card-title {
+    font-family: var(--font-heading) !important;
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: var(--cm-text-0);
+    letter-spacing: -0.2px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    margin-bottom: 6px;
+}
+.cm-card-meta {
+    display: flex;
+    align-items: center;
+    flex-wrap: nowrap;
+    gap: 7px;
+    font-size: 0.74rem;
+    color: var(--cm-text-1);
+    margin-bottom: 8px;
+    min-width: 0;
+    white-space: nowrap;
+    overflow: hidden;
+}
+.cm-card-rating {
+    color: var(--cm-amber) !important;
+    font-weight: 800;
+    font-family: var(--font-heading) !important;
+    letter-spacing: 0.3px;
+}
+.cm-card-dot {
+    color: var(--cm-text-2);
+}
+.cm-card-year,
+.cm-card-genres {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+.cm-card-overview {
+    font-size: 0.78rem;
+    line-height: 1.5;
+    color: var(--cm-text-1);
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    margin-bottom: 12px;
+}
+
+/* AI insight banner */
 .ai-reason-banner {
-    background: rgba(229, 9, 20, 0.03);
-    border: 1px solid rgba(229, 9, 20, 0.12);
-    border-radius: 6px;
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+    margin: 11px 14px 10px 14px;
     padding: 8px 10px;
-    margin-top: 8px;
-    font-size: 0.75rem;
-    color: var(--text-secondary);
-    line-height: 1.35;
-    border-left: 2px solid var(--brand-crimson);
+    border-radius: 8px;
+    background: var(--cm-violet-dim);
+    border: 1px solid rgba(139, 123, 249, 0.22);
+    border-left: 2px solid var(--cm-violet);
+    font-size: 0.74rem;
+    line-height: 1.5;
+    color: #c9c4f2;
+}
+.ai-reason-tag {
+    font-family: var(--font-heading) !important;
+    font-size: 0.58rem;
+    font-weight: 800;
+    letter-spacing: 1.4px;
+    color: var(--cm-violet);
+    padding-top: 1px;
+    flex: none;
 }
 
-/* Responsive grid overrides to preserve exact layout cards spacing */
-div[data-testid="column"] {
-    padding: 4px !important;
-}
-
-/* ==========================================================================
-   8. RESPONSIVE MOVIE CARD BUTTONS SYSTEM (PREVENTS VERTICAL WRAPPING)
-   ========================================================================== */
-
-/* Outer horizontal columns row block */
-div[data-testid="column"]:has(.movie-card-marker) div[data-testid="stHorizontalBlock"] {
+/* ---------------------------------------------------------------------------
+   10. CARD ACTION ROW — INFO | PLAY | ADD (never wraps, never splits labels)
+   NOTE: card buttons all pass help=, so Streamlit wraps the <button> in a
+   tooltip div (stButton > div > button). All selectors here must use
+   descendant combinators — `> button` silently matches nothing. The global
+   nowrap rule in section 6 is the final guarantee against INF/O splitting.
+   --------------------------------------------------------------------------- */
+div[data-testid="stColumn"]:has(.movie-card-marker) div[data-testid="stHorizontalBlock"] {
     display: flex !important;
     flex-direction: row !important;
-    flex-wrap: wrap !important;
+    flex-wrap: nowrap !important;
     gap: 6px !important;
-    padding: 0 12px 14px 12px !important; /* Unified comfortable padding */
+    padding: 0 12px 12px 12px !important;
+    margin: auto 0 0 0 !important;
     width: 100% !important;
-    margin: 0 !important;
 }
-
-/* Individual card button columns (c1, c2, c3) */
-div[data-testid="column"]:has(.movie-card-marker) div[data-testid="stHorizontalBlock"] > div[data-testid="column"] {
-    flex: 1 1 calc(33.333% - 6px) !important;
-    min-width: 46px !important;
+div[data-testid="stColumn"]:has(.movie-card-marker) div[data-testid="stHorizontalBlock"] > div[data-testid="stColumn"] {
+    flex: 1 1 0 !important;
+    min-width: 0 !important;
+    max-width: none !important;
+    width: auto !important;
     padding: 0 !important;
     margin: 0 !important;
-    width: auto !important;
 }
-
-/* Action button configurations inside movie cards */
-div[data-testid="column"]:has(.movie-card-marker) div[data-testid="stHorizontalBlock"] div[data-testid="stButton"] > button {
+div[data-testid="stColumn"]:has(.movie-card-marker) div[data-testid="stHorizontalBlock"] div[data-testid="stButton"] {
+    display: flex !important;
     width: 100% !important;
+}
+/* Buttons: equal 40px heights, full single-line labels. help= adds a tooltip
+   wrapper between stButton and <button>, hence descendant selectors only. */
+div[data-testid="stColumn"]:has(.movie-card-marker) div[data-testid="stHorizontalBlock"] div[data-testid="stButton"] button {
+    width: 100% !important;
+    height: 40px !important;
+    min-height: 40px !important;
+    padding: 0 7px !important;
+    font-size: 0.8rem !important;
+    letter-spacing: 0.35px !important;
+    border-radius: 8px !important;
+    color: #d7d7e0 !important;
+    box-shadow: none !important;
     white-space: nowrap !important;
     overflow: hidden !important;
-    text-overflow: clip !important;
-    padding: 6px 4px !important; /* Elegant compact padding */
-    font-size: clamp(0.72rem, 1.8vw, 0.85rem) !important; /* Premium fluid size */
-    min-height: 32px !important;
+    text-overflow: ellipsis !important;
+}
+/* Every label node inside card buttons: single-line, no INF/O splitting.
+   Ellipsis is only a safety fallback — labels are sized to fit fully. */
+div[data-testid="stColumn"]:has(.movie-card-marker) div[data-testid="stHorizontalBlock"] div[data-testid="stButton"] button * {
+    white-space: nowrap !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+    max-width: 100% !important;
+}
+div[data-testid="stColumn"]:has(.movie-card-marker) div[data-testid="stHorizontalBlock"] div[data-testid="stButton"] button > div > span {
     display: inline-flex !important;
     align-items: center !important;
     justify-content: center !important;
-    gap: 4px !important; /* Clean icon-to-text separation */
-    font-weight: 700 !important;
-    border-radius: 4px !important;
-    box-shadow: none !important;
+    min-width: 0 !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+    max-width: 100% !important;
 }
 
-/* Prevent double icons or alignment stretching */
-div[data-testid="column"]:has(.movie-card-marker) div[data-testid="stHorizontalBlock"] div[data-testid="stButton"] > button span {
-    display: inline-flex !important;
-    align-items: center !important;
-    justify-content: center !important;
+/* INFO — neutral ghost */
+div[data-testid="stColumn"]:has(.movie-card-marker) div[data-testid="stHorizontalBlock"] > div[data-testid="stColumn"]:nth-child(1) button {
+    background: rgba(255, 255, 255, 0.05) !important;
+    border: 1px solid var(--cm-border-strong) !important;
+}
+div[data-testid="stColumn"]:has(.movie-card-marker) div[data-testid="stHorizontalBlock"] > div[data-testid="stColumn"]:nth-child(1) button:hover {
+    background: rgba(255, 255, 255, 0.12) !important;
+    border-color: rgba(255, 255, 255, 0.28) !important;
+    transform: translateY(-1px) !important;
 }
 
-/* Symmetrical Mobile Reflow - Below 520px viewport:
-   Stacks Info and Play side-by-side (50% each), and Watchlist on full row (100%)
-*/
-@media (max-width: 520px) {
-    div[data-testid="column"]:has(.movie-card-marker) div[data-testid="stHorizontalBlock"] > div[data-testid="column"]:nth-child(1),
-    div[data-testid="column"]:has(.movie-card-marker) div[data-testid="stHorizontalBlock"] > div[data-testid="column"]:nth-child(2) {
-        flex: 1 1 calc(50% - 4px) !important;
-        min-width: 80px !important;
+/* PLAY — primary red accent */
+div[data-testid="stColumn"]:has(.movie-card-marker) div[data-testid="stHorizontalBlock"] > div[data-testid="stColumn"]:nth-child(2) button {
+    background: rgba(229, 9, 20, 0.14) !important;
+    border: 1px solid rgba(229, 9, 20, 0.4) !important;
+    color: #ff6b74 !important;
+}
+div[data-testid="stColumn"]:has(.movie-card-marker) div[data-testid="stHorizontalBlock"] > div[data-testid="stColumn"]:nth-child(2) button:hover {
+    background: rgba(229, 9, 20, 0.24) !important;
+    border-color: rgba(229, 9, 20, 0.7) !important;
+    color: #ffffff !important;
+    transform: translateY(-1px) !important;
+    box-shadow: 0 4px 14px rgba(229, 9, 20, 0.25) !important;
+}
+
+/* ADD — violet accent (saved state keeps consistent geometry) */
+div[data-testid="stColumn"]:has(.movie-card-marker) div[data-testid="stHorizontalBlock"] > div[data-testid="stColumn"]:nth-child(3) button {
+    background: rgba(255, 255, 255, 0.05) !important;
+    border: 1px solid var(--cm-border-strong) !important;
+}
+div[data-testid="stColumn"]:has(.movie-card-marker) div[data-testid="stHorizontalBlock"] > div[data-testid="stColumn"]:nth-child(3) button:hover {
+    border-color: rgba(139, 123, 249, 0.55) !important;
+    color: #ffffff !important;
+    transform: translateY(-1px) !important;
+    background: rgba(139, 123, 249, 0.16) !important;
+}
+div[data-testid="stColumn"]:has(.movie-card-marker) div[data-testid="stHorizontalBlock"] > div[data-testid="stColumn"]:nth-child(3) button:not(:disabled) {
+    font-variant-numeric: tabular-nums;
+}
+
+/* ---------------------------------------------------------------------------
+   11. SKELETON LOADING STATES
+   --------------------------------------------------------------------------- */
+div[data-testid="stColumn"]:has(.cm-skeleton) {
+    background: var(--cm-card) !important;
+    border: 1px solid var(--cm-border) !important;
+    border-radius: var(--radius-card) !important;
+    overflow: hidden !important;
+    padding: 0 !important;
+}
+div[data-testid="stColumn"]:has(.cm-skeleton) > div[data-testid="stVerticalBlock"] {
+    gap: 0 !important;
+}
+.cm-skeleton {
+    display: flex;
+    flex-direction: column;
+    background: var(--cm-card);
+    border: 1px solid var(--cm-border);
+    border-radius: var(--radius-card);
+    overflow: hidden;
+    padding-bottom: 14px;
+}
+.cm-sk-poster {
+    aspect-ratio: 2 / 3;
+    background: #10101a;
+    position: relative;
+    overflow: hidden;
+}
+.cm-sk-poster::after,
+.cm-sk-body::after,
+.cm-sk-actions::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    transform: translateX(-100%);
+    background: linear-gradient(105deg, transparent 35%, rgba(255, 255, 255, 0.05) 50%, transparent 65%);
+    animation: cm-shimmer 1.8s ease-in-out infinite;
+}
+.cm-sk-body {
+    position: relative;
+    overflow: hidden;
+    padding: 14px 14px 6px 14px;
+    display: flex;
+    flex-direction: column;
+    gap: 9px;
+}
+.cm-sk-line {
+    height: 10px;
+    border-radius: 5px;
+    background: #16161f;
+}
+.cm-sk-w70 { width: 70%; }
+.cm-sk-w45 { width: 45%; }
+.cm-sk-w90 { width: 90%; }
+.cm-sk-actions {
+    position: relative;
+    overflow: hidden;
+    display: flex;
+    gap: 6px;
+    padding: 8px 14px 0 14px;
+}
+.cm-sk-actions span {
+    flex: 1;
+    height: 30px;
+    border-radius: 7px;
+    background: #15151e;
+}
+
+/* ---------------------------------------------------------------------------
+   12. PANELS / SPOTLIGHT / BANNERS (details overlay, AI lab, etc.)
+   --------------------------------------------------------------------------- */
+.cm-panel {
+    background: rgba(13, 13, 20, 0.72) !important;
+    border: 1px solid var(--cm-border) !important;
+    border-radius: 12px !important;
+    padding: 22px !important;
+    box-shadow: 0 18px 44px rgba(0, 0, 0, 0.55) !important;
+}
+.cm-panel-accent {
+    border-color: rgba(229, 9, 20, 0.28) !important;
+}
+.cm-panel-title {
+    margin: 0 0 14px 0 !important;
+    font-size: 1.05rem !important;
+    letter-spacing: 0.6px !important;
+    color: var(--cm-text-0) !important;
+}
+
+.cm-banner {
+    border-radius: var(--radius-btn);
+    padding: 11px 14px;
+    margin-bottom: 18px;
+    font-size: 0.82rem;
+    line-height: 1.5;
+}
+.cm-banner-ok {
+    background: rgba(61, 220, 132, 0.08);
+    border: 1px solid rgba(61, 220, 132, 0.3);
+    color: #7ee2a8;
+}
+.cm-banner-warn {
+    background: rgba(229, 9, 20, 0.07);
+    border: 1px solid rgba(229, 9, 20, 0.3);
+    color: #ff9097;
+}
+
+.cm-spotlight-title {
+    font-size: 1rem !important;
+    font-weight: 800 !important;
+    letter-spacing: 2px !important;
+    text-transform: uppercase !important;
+    color: var(--cm-text-1) !important;
+    margin: 1.6rem 0 0.8rem 0 !important;
+}
+.cm-genre-pill {
+    display: inline-block;
+    background: rgba(229, 9, 20, 0.12);
+    border: 1px solid rgba(229, 9, 20, 0.3);
+    color: #ff8a91;
+    font-size: 0.72rem;
+    padding: 4px 12px;
+    border-radius: 999px;
+    font-weight: 600;
+}
+.cm-spotlight-poster {
+    width: 100%;
+    border-radius: 12px;
+    box-shadow: 0 18px 40px rgba(0, 0, 0, 0.65);
+    border: 1px solid var(--cm-border);
+}
+
+/* ---------------------------------------------------------------------------
+   13. EMPTY / ARCHITECTURE STATES
+   --------------------------------------------------------------------------- */
+.cm-empty {
+    text-align: center;
+    padding: 4rem 2rem;
+    background: rgba(255, 255, 255, 0.015);
+    border-radius: 16px;
+    border: 1px dashed rgba(229, 9, 20, 0.32);
+    animation: cm-fade-up 0.5s var(--ease-out) both;
+}
+.cm-step {
+    display: flex;
+    gap: 15px;
+    align-items: flex-start;
+}
+.cm-step-num {
+    background: linear-gradient(180deg, #f40814, var(--cm-red));
+    color: #fff;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 800;
+    flex: none;
+    box-shadow: 0 0 14px rgba(229, 9, 20, 0.45);
+    font-family: var(--font-heading) !important;
+}
+.cm-tech-card {
+    background: rgba(255, 255, 255, 0.02);
+    border: 1px solid var(--cm-border);
+    padding: 20px;
+    border-radius: 10px;
+    text-align: center;
+    height: 190px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    transition: transform 0.2s var(--ease-out), border-color 0.2s ease;
+}
+.cm-tech-card:hover {
+    transform: translateY(-3px);
+    border-color: rgba(229, 9, 20, 0.35);
+}
+.cm-tech-icon {
+    font-size: 1.9rem;
+    margin-bottom: 8px;
+}
+.cm-tech-name {
+    margin: 0 0 5px 0 !important;
+    font-size: 1rem !important;
+}
+.cm-tech-desc {
+    margin: 0 !important;
+    color: var(--cm-text-1) !important;
+    font-size: 0.76rem !important;
+    line-height: 1.5 !important;
+}
+
+/* ---------------------------------------------------------------------------
+   14. INPUTS
+   --------------------------------------------------------------------------- */
+input, textarea, div[data-baseweb="select"] > div {
+    background-color: var(--cm-bg-2) !important;
+    color: var(--cm-text-0) !important;
+    border: 1px solid var(--cm-border-strong) !important;
+    border-radius: var(--radius-btn) !important;
+    box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.45) !important;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease !important;
+}
+input:focus, div[data-baseweb="select"] > div:focus-within {
+    border-color: rgba(229, 9, 20, 0.55) !important;
+    box-shadow: 0 0 0 1px rgba(229, 9, 20, 0.3), 0 0 18px rgba(229, 9, 20, 0.14) !important;
+}
+input::placeholder {
+    color: var(--cm-text-2) !important;
+}
+
+/* ---------------------------------------------------------------------------
+   15. ANIMATIONS
+   --------------------------------------------------------------------------- */
+@keyframes cm-fade-in {
+    from { opacity: 0; }
+    to   { opacity: 1; }
+}
+@keyframes cm-fade-up {
+    from { opacity: 0; transform: translateY(14px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
+@keyframes cm-card-in {
+    from { opacity: 0; transform: translateY(10px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
+@keyframes cm-shimmer {
+    to { transform: translateX(100%); }
+}
+@keyframes cm-pulse {
+    0%, 100% { opacity: 1; }
+    50%      { opacity: 0.45; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    * {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
     }
-    div[data-testid="column"]:has(.movie-card-marker) div[data-testid="stHorizontalBlock"] > div[data-testid="column"]:nth-child(3) {
+}
+
+/* ---------------------------------------------------------------------------
+   16. RESPONSIVE
+   --------------------------------------------------------------------------- */
+
+/* Card grid ladder: 5-up ≥1500px, then 4 → 3 → 2 → 1.
+   Bases are computed so a full row always fits without wrapping (flex-grow
+   absorbs the remainder), and cards never get narrow enough to split labels. */
+
+/* 4-up (1200–1499px) */
+@media (max-width: 1499px) {
+    div[data-testid="stHorizontalBlock"]:has(.movie-card-marker, .cm-skeleton) {
+        flex-wrap: wrap !important;
+    }
+    div[data-testid="stHorizontalBlock"]:has(.movie-card-marker, .cm-skeleton) > div[data-testid="stColumn"] {
+        flex: 1 1 calc(25% - 0.9375rem) !important;
+        max-width: calc(25% - 0.9375rem) !important;
+        min-width: 0 !important;
+    }
+}
+/* 3-up (900–1199px) */
+@media (max-width: 1199px) {
+    div[data-testid="stHorizontalBlock"]:has(.movie-card-marker, .cm-skeleton) > div[data-testid="stColumn"] {
+        flex: 1 1 calc(33.333% - 0.8333rem) !important;
+        max-width: calc(33.333% - 0.8333rem) !important;
+    }
+}
+/* 2-up (640–899px) */
+@media (max-width: 899px) {
+    .cm-hero-content { max-width: 72%; }
+    div[data-testid="stHorizontalBlock"]:has(.movie-card-marker, .cm-skeleton) > div[data-testid="stColumn"] {
+        flex: 1 1 calc(50% - 0.625rem) !important;
+        max-width: calc(50% - 0.625rem) !important;
+    }
+}
+/* 1-up + mobile strategies (<640px) */
+@media (max-width: 639px) {
+    div.block-container { padding: 1.6rem 1rem 3rem 1rem !important; }
+    .cm-hero { height: clamp(380px, 62vh, 500px); }
+    .cm-hero-content { max-width: 100%; }
+    .cm-hero-overview { -webkit-line-clamp: 2; }
+    div[data-testid="stHorizontalBlock"]:has(.movie-card-marker, .cm-skeleton) > div[data-testid="stColumn"] {
         flex: 1 1 100% !important;
-        margin-top: 4px !important;
+        max-width: 100% !important;
+        min-width: 0 !important;
     }
-    div[data-testid="column"]:has(.movie-card-marker) div[data-testid="stHorizontalBlock"] div[data-testid="stButton"] > button {
-        padding: 8px 8px !important;
-        font-size: 0.8rem !important;
+    /* Hero CTAs: deliberate stacked layout, never clipped labels */
+    div[data-testid="stHorizontalBlock"]:has(.cm-hero-actions-marker) {
+        flex-direction: column !important;
+        gap: 10px !important;
+    }
+    div[data-testid="stHorizontalBlock"]:has(.cm-hero-actions-marker) > div[data-testid="stColumn"] {
+        flex: 1 1 100% !important;
+        max-width: 100% !important;
+        min-width: 0 !important;
+    }
+    div[data-testid="stHorizontalBlock"]:has(.cm-hero-actions-marker) > div[data-testid="stColumn"]:nth-child(3) {
+        display: none !important;
+    }
+    /* Card actions on phones: deliberate 2+1 layout (INFO | PLAY on one row,
+       ADD spanning the row below). Labels ALWAYS stay on single lines. */
+    div[data-testid="stColumn"]:has(.movie-card-marker) div[data-testid="stHorizontalBlock"] {
+        flex-wrap: wrap !important;
+        gap: 6px !important;
+        padding: 0 8px 10px 8px !important;
+    }
+    div[data-testid="stColumn"]:has(.movie-card-marker) div[data-testid="stHorizontalBlock"] > div[data-testid="stColumn"]:nth-child(1),
+    div[data-testid="stColumn"]:has(.movie-card-marker) div[data-testid="stHorizontalBlock"] > div[data-testid="stColumn"]:nth-child(2) {
+        flex: 1 1 calc(50% - 3px) !important;
+        max-width: calc(50% - 3px) !important;
+        min-width: 0 !important;
+    }
+    div[data-testid="stColumn"]:has(.movie-card-marker) div[data-testid="stHorizontalBlock"] > div[data-testid="stColumn"]:nth-child(3) {
+        flex: 1 1 100% !important;
+        max-width: 100% !important;
+        min-width: 0 !important;
+    }
+    div[data-testid="stColumn"]:has(.movie-card-marker) div[data-testid="stHorizontalBlock"] div[data-testid="stButton"] button {
+        font-size: 0.78rem !important;
+        letter-spacing: 0.4px !important;
+        height: 38px !important;
+        min-height: 38px !important;
     }
 }
-
